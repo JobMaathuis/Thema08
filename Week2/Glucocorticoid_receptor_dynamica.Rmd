@@ -14,8 +14,8 @@ Verder rekening houden met eenheden.
 
 ```{r}
 
-Glucorticoide.receptor.dynamics <- function(t,mRNAR, R,DR, DR.N,params){
-  with(as.list(c(parms)),{
+Glucorticoide.receptor.dynamics <- function(t, state, parms){
+  with(as.list(c(parms, state)),{
     dmRNAR <- ks.RM * (1 - (DR.N / (IC50.Rm + DR.N))) - kd.RM * mRNAR
     
     dR <- ks.R * mRNAR + Rf * kre * DR.N - kon * D * R - kd.R * R
@@ -28,13 +28,26 @@ Glucorticoide.receptor.dynamics <- function(t,mRNAR, R,DR, DR.N,params){
   })
 }
 
-state <- c(mRNAR = 267, R = 4.74, DR = 0, DR.N = 0)
+state <- c(mRNAR = 267*10e5 * 10e-3, R = 4.74*10e5, DR = 0, DR.N = 0)
 
 time <- seq(0, 48, by = 1)
 
-parameters <- c(ks.RM = 2.90, IC50.Rm = 26.2, kd.RM = 0.612, ks.R = 3.22, Rf = 0.49, kre = 0.57, kon = 0.00329, kd.R = 0.0572, kT = 0.63, D = 20)
+parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3, 
+                IC50.Rm = 26.2*10e5, 
+                kd.RM = 0.612, 
+                ks.R = 3.22, 
+                Rf = 0.49, 
+                kre = 0.57, 
+                kon = 0.00329, 
+                kd.R = 0.0572, 
+                kT = 0.63, 
+                D = (20 * 1000)/374.471)
 
-out <- ode(times = times, y = state, parms = parameters.increase, func = mRNA.dynamic, method = "euler")
+out <- ode(times = times, y = state, parms = parameters, func = Glucorticoide.receptor.dynamics, method = "euler")
 
-out
+plot(out)
+
+# for (i in 1:4) {
+  # plot(out[,1], out[,i+1], type = 'l')
+# }
 ```
