@@ -1,0 +1,74 @@
+---
+title: "mRNA case"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 1.0 opdracht
+In deze opdracht gaan we de mRNA dynamic programmeren. We gebruiken hiervoor het model
+
+dR/dt = -rR + m
+
+R is the number of transcripts
+r is the rate of decay of existing transcripts
+m is the number of new transcripts produced per second
+
+In dit geval kunnen we fictieve waarden gebruiken voor R, r en m.
+
+**Vragen**
+1. De volgende parameters moet je programeren:
+- r is the rate of decay of existing transcripts
+- m is the number of new transcripts produced per second
+
+2.
+https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4100934/ 
+Gebasseerd op een experimentele observatie van de mate van de snelheidsbeperkende processen.
+Gemiddelde aantallen mRNA- en eiwitmoleculen worden behandeld als continue functies die zijn gespecificeerd in een reeks gewone differentiaalvergelijkingen. De verandering van het aantal mRNA-moleculen in een tijdsinterval is gelijk aan de stroomsnelheid van nieuw gesynthetiseerd mRNA in het cytoplasma vanuit de kern, minus de hoeveelheid mRNA die gedurende deze tijd in het cytoplasma wordt afgebroken.
+
+3.
+Genen   -->   mRNA    -->   afbraak
+         m      R      r
+
+4.
+Het gaat over het aantal nieuwe transcripten per tijd, dus niet het totaal nieuwe aantal transcripten.
+
+
+## 2.0 opdracht
+```{r}
+library(deSolve)
+
+
+
+# define model 
+mRNA.dynamic <- function(t,R,parms){
+  with(as.list(c(parms)),{
+         dR <- -r*R + m
+         return(list(c(dR)))
+       }
+       )
+}
+parameters <- c(r = 0.1, m = 100)
+#initial state
+state <- c(R = 100)
+
+#define time sequence you want to run the model
+times <- seq(0, 50,  by = 1)
+
+parameters.increase <- c(r = 0.1, m = 19)
+parameters.steady <- c(r = 0.1, m = 10)
+parameters.decrease <- c(r = 0.1, m = 1)
+
+# run simulation using continuous approach
+out.increase  <- ode(times = times, y = state, parms = parameters.increase, func = mRNA.dynamic, method = "euler")
+out.steady <- ode(times = times, y = state, parms = parameters.steady, func = mRNA.dynamic, method = "euler")
+out.decrease <- ode(times = times, y = state, parms = parameters.decrease, func = mRNA.dynamic, method = "euler")
+
+plot(out.steady, col = "red", ylim = c(0, 200), main = "amount of mRNA transcripts over time", ylab = "Number of transcripts", xlab = "timepoints")
+lines(out.decrease, col = "blue")
+lines(out.increase, col = "green")
+
+legend(20, 175, legend=c("Steady state", "amount of mRNA increasing over time", "amount of mRNA decreasing over time"), fill = c("red", "green", "blue"))
+```
