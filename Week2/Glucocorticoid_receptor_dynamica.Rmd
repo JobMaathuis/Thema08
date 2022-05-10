@@ -7,10 +7,9 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Hier eerst even een introductie etc.
 
+## Corticosteroiden
 
-Verder rekening houden met eenheden.
 
 ```{r}
 
@@ -28,7 +27,10 @@ Glucorticoide.receptor.dynamics <- function(t, state, parms){
   })
 }
 
-state <- c(mRNAR = 267*10e5 * 10e-3, R = 4.74*10e5, DR = 0, DR.N = 0)
+state <- c(mRNAR = 267*10e5 * 10e-3, 
+           R = 4.74*10e5, 
+           DR = 0, 
+           DR.N = 0)
 
 time <- seq(0, 48, by = 1)
 
