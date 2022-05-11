@@ -12,7 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Glucocorticoids (GC) are a type of steroid hormones which are used by the immune system to repress inflammation. For this reason GCs are used as a medicine to treat inflammation in inflammatory diseases like asthma. The anti-inflammatory process caused by GCs can be divided into two processes: trans-repression and trans-activation. In trans-repression some inflammatory genes are suppressed by binding of the GCs to GC receptors (GR). This causes histon deacetylation of these genes and this causes for less transcription. In trans-activation the GRs activate transcription of anti-inflammatory genes by binding to DNA recognition sites on these genes. This activation is achieved by histon acetylation.
 
+## Receptor-medicine interaction
 
+When the MPL (D) is added it binds to the receptors (R) to form MPL-receptor complexes, leading to an increase in MPL-receptor density (DR). This DR is then being transferred to the nucleus (DR(N)), resulting in a higher DR(N) concentration. However, when the DR(N) concentration reaches a certain level it supresses the mRNA synthesis (the mRNA decreases to 50% of the base value). This then results in less R and therefor decreasing values of DR and DR(N).
+
+## Model
 ```{r}
 library(deSolve)
 
@@ -51,6 +55,8 @@ times <- seq(0, 48)
 out <- ode(y = state, times = times, func = mRNA.dynamic, parms = parameters)
 plot(out, las = 1)
 ```
+
+## Result discussion
 
 mRNAR is the concentration of the mRNA receptor, at the start we see a high concentration, then it rapidly decrease, after that it increases a bit again. After a certain time it is constant. 
 R is the free glucocorticoid receptor density in the cytosol, it has an initial value and increases over time, after reaching a maximum, it decreases. Then after a certain time it is constant.
