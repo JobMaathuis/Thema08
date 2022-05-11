@@ -8,103 +8,46 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Corticosteroiden
+## Introduction
+
+Glucocorticoids (GC) are a type of steroid hormones which are used by the immune system to repress inflammation. For this reason GCs are used as a medicine to treat inflammation in inflammatory diseases like asthma. The anti-inflammatory process caused by GCs can be divided into two processes: trans-repression and trans-activation. In trans-repression some inflammatory genes are supressed by binding of the GCs to GC receptors (GR). This causes histon deacetylation of these genes and this causes for less transcription. In trans-activation the GRs activate transcription of anti-inflammatory genes by binding to DNA recognition sites on these genes. This activation is achieved by histon acetylation
 
 
 ```{r}
 library(deSolve)
 
-Glucorticoide.receptor.dynamics <- function(t, state, parameters){
-  with(as.list(c(state, parameters)),{
-    dmRNAR <- ks.RM*(1-(DR.N/(IC50.Rm+DR.N)))-(kd.RM*mRNAR)
+mRNA.dynamic <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
     
-    dR <- (ks.R*mRNAR)+(Rf*kre*DR.N)-(kon*D*R)-(kd.R*R)
+    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
     
-    dDR <- (kon*D*R)-(kT*DR)
+    dDR <- k.on * D * R - k.T * DR
     
-    dDR.N <- (kT*DR)-(kre*DR.N)
+    dDR.N <- k.T * DR - k.re * DR.N
     
-    return(list(c(dR, dmRNAR, dDR, dDR.N)))
-  }
-  )
+    list(c(dmRNAr, dR, dDR, dDR.N))
+  }) 
 }
 
-state <- c(R = 267*10e5 * 10e-3, 
-           mRNAR = 4.74*10e5, 
-           DR = 0, 
+parameters <- c(ks.Rm = 2.90,
+                IC50.Rm = 26.2,
+                k.on = 0.00329,
+                k.T = 0.63,
+                k.re = 0.57,
+                Rf = 0.49,
+                k.dR = 0.0572,
+                k.dRm = 0.612,
+                k.sR = 3.22,
+                D = 20 * 1000 * 1/374.471 )
+
+state <- c(mRNAr = 4.74,
+           R = 267,
+           DR = 0,
            DR.N = 0)
 
-times <- seq(0, 48, by = 1)
+times <- seq(0, 48)
 
-parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3, 
-                IC50.Rm = 26.2*10e5, 
-                kon = 0.00329,
-                kT = 0.63, 
-                kre = 0.57,
-                Rf = 0.49, 
-                kd.R = 0.0572,
-                kd.RM = 0.612, 
-                ks.R = 3.22, 
-                D = (20 * 1000)/374.471)
-
-out <- ode(times = times, y = state, parms = parameters, func = Glucorticoide.receptor.dynamics, method = "euler")
-
-plot(out, las = 1)
-
-# for (i in 1:4) {
-  # plot(out[,1], out[,i+1], type = 'l')
-# }
+out <- ode(y = state, times = times, func = mRNA.dynamic, parms = parameters)
+plot(out)
 ```
-
-mRNAR is the concentration of the mRNA receptor, at the start we see a high concentration and its decreasing over time. 
-R is the free glucocorticoid receptor density in the cytosol, it has an initial value and increases over time, after reaching a maximum, it decreases. 
-DR is the density of the MPL-receptor complex and DR.N the concentration of MPL-receptor complexin the cel nucleus. Both start at zero, increase over time and after reaching a maximum it decreases. DR.N increases some time later that DR and decreases less quickly. 
-
-It starts with a high level of mRNAR, the other variables then increase until there is no more mRNAR left. Then the other variables start to decrease. Therefor the mRNAR variable is the most important for the effect of the medicine, because the quantity determines when the other variables decrease.
-
-
-
-
-
-
-
-
-library(deSolve)
-
-Glucorticoide.receptor.dynamics <- function(t, state, parms){
-  with(as.list(c(parms, state)),{
-    dmRNAR <- ks.RM * (1 -( DR.N / (IC50.Rm + DR.N))) - kd.RM * mRNAR
-    
-    dR <- ks.R * mRNAR + Rf * kre * DR.N - kon * D * R - kd.R * R
-    
-    dDR <- kon * D * R - kT * DR
-    
-    dDR.N <- kT * DR - kre * DR.N
-    
-    return(list(c(dmRNAR, dR, dDR, dDR.N)))
-  })
-}
-
-state <- c(R = 267*10e5 * 10e-3, 
-           mRNAR = 4.74*10e5, 
-           DR = 0, 
-           DR.N = 0)
-
-times <- seq(0, 48, by = 1)
-
-parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3, 
-                IC50.Rm = 26.2*10e5, 
-                kd.RM = 0.612, 
-                ks.R = 3.22, 
-                Rf = 0.49, 
-                kre = 0.57, 
-                kon = 0.00329, 
-                kd.R = 0.0572, 
-                kT = 0.63, 
-                D = (20 * 1000)/374.471)
-
-out <- ode(times = times, y = state, parms = parameters, func = Glucorticoide.receptor.dynamics, method = "euler")
-
-plot(out, las = 1)
-
-
