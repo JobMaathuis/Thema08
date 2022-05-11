@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r}
+library(deSolve)
 
 Glucorticoide.receptor.dynamics <- function(t, state, parms){
   with(as.list(c(parms, state)),{
@@ -32,7 +33,7 @@ state <- c(mRNAR = 267*10e5 * 10e-3,
            DR = 0, 
            DR.N = 0)
 
-time <- seq(0, 48, by = 1)
+times <- seq(0, 48, by = 1)
 
 parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3, 
                 IC50.Rm = 26.2*10e5, 
