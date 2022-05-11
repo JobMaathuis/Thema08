@@ -14,9 +14,66 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r}
 library(deSolve)
 
+Glucorticoide.receptor.dynamics <- function(t, state, parameters){
+  with(as.list(c(state, parameters)),{
+    dmRNAR <- ks.RM*(1-(DR.N/(IC50.Rm+DR.N)))-(kd.RM*mRNAR)
+    
+    dR <- (ks.R*mRNAR)+(Rf*kre*DR.N)-(kon*D*R)-(kd.R*R)
+    
+    dDR <- (kon*D*R)-(kT*DR)
+    
+    dDR.N <- (kT*DR)-(kre*DR.N)
+    
+    return(list(c(dR, dmRNAR, dDR, dDR.N)))
+  }
+  )
+}
+
+state <- c(R = 267*10e5 * 10e-3, 
+           mRNAR = 4.74*10e5, 
+           DR = 0, 
+           DR.N = 0)
+
+times <- seq(0, 48, by = 1)
+
+parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3, 
+                IC50.Rm = 26.2*10e5, 
+                kon = 0.00329,
+                kT = 0.63, 
+                kre = 0.57,
+                Rf = 0.49, 
+                kd.R = 0.0572,
+                kd.RM = 0.612, 
+                ks.R = 3.22, 
+                D = (20 * 1000)/374.471)
+
+out <- ode(times = times, y = state, parms = parameters, func = Glucorticoide.receptor.dynamics, method = "euler")
+
+plot(out, las = 1)
+
+# for (i in 1:4) {
+  # plot(out[,1], out[,i+1], type = 'l')
+# }
+```
+
+mRNAR is the concentration of the mRNA receptor, at the start we see a high concentration and its decreasing over time. 
+R is the free glucocorticoid receptor density in the cytosol, it has an initial value and increases over time, after reaching a maximum, it decreases. 
+DR is the density of the MPL-receptor complex and DR.N the concentration of MPL-receptor complexin the cel nucleus. Both start at zero, increase over time and after reaching a maximum it decreases. DR.N increases some time later that DR and decreases less quickly. 
+
+It starts with a high level of mRNAR, the other variables then increase until there is no more mRNAR left. Then the other variables start to decrease. Therefor the mRNAR variable is the most important for the effect of the medicine, because the quantity determines when the other variables decrease.
+
+
+
+
+
+
+
+
+library(deSolve)
+
 Glucorticoide.receptor.dynamics <- function(t, state, parms){
   with(as.list(c(parms, state)),{
-    dmRNAR <- ks.RM * (1 - (DR.N / (IC50.Rm + DR.N))) - kd.RM * mRNAR
+    dmRNAR <- ks.RM * (1 -( DR.N / (IC50.Rm + DR.N))) - kd.RM * mRNAR
     
     dR <- ks.R * mRNAR + Rf * kre * DR.N - kon * D * R - kd.R * R
     
@@ -28,8 +85,8 @@ Glucorticoide.receptor.dynamics <- function(t, state, parms){
   })
 }
 
-state <- c(mRNAR = 267*10e5 * 10e-3, 
-           R = 4.74*10e5, 
+state <- c(R = 267*10e5 * 10e-3, 
+           mRNAR = 4.74*10e5, 
            DR = 0, 
            DR.N = 0)
 
@@ -48,9 +105,6 @@ parameters <- c(ks.RM = 2.90 * 10e5 * 10e-3,
 
 out <- ode(times = times, y = state, parms = parameters, func = Glucorticoide.receptor.dynamics, method = "euler")
 
-plot(out)
+plot(out, las = 1)
 
-# for (i in 1:4) {
-  # plot(out[,1], out[,i+1], type = 'l')
-# }
-```
+
