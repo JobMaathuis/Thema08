@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-Glucocorticoids (GC) are a type of steroid hormones which are used by the immune system to repress inflammation. For this reason GCs are used as a medicine to treat inflammation in inflammatory diseases like asthma. The anti-inflammatory process caused by GCs can be divided into two processes: trans-repression and trans-activation. In trans-repression some inflammatory genes are supressed by binding of the GCs to GC receptors (GR). This causes histon deacetylation of these genes and this causes for less transcription. In trans-activation the GRs activate transcription of anti-inflammatory genes by binding to DNA recognition sites on these genes. This activation is achieved by histon acetylation
+Glucocorticoids (GC) are a type of steroid hormones which are used by the immune system to repress inflammation. For this reason GCs are used as a medicine to treat inflammation in inflammatory diseases like asthma. The anti-inflammatory process caused by GCs can be divided into two processes: trans-repression and trans-activation. In trans-repression some inflammatory genes are suppressed by binding of the GCs to GC receptors (GR). This causes histon deacetylation of these genes and this causes for less transcription. In trans-activation the GRs activate transcription of anti-inflammatory genes by binding to DNA recognition sites on these genes. This activation is achieved by histon acetylation.
 
 
 ```{r}
@@ -49,5 +49,12 @@ state <- c(mRNAr = 4.74,
 times <- seq(0, 48)
 
 out <- ode(y = state, times = times, func = mRNA.dynamic, parms = parameters)
-plot(out)
+plot(out, las = 1)
 ```
+
+mRNAR is the concentration of the mRNA receptor, at the start we see a high concentration, then it rapidly decrease, after that it increases a bit again. After a certain time it is constant. 
+R is the free glucocorticoid receptor density in the cytosol, it has an initial value and increases over time, after reaching a maximum, it decreases. Then after a certain time it is constant.
+DR is the density of the MPL-receptor complex and DR.N the concentration of MPL-receptor complex in the cel nucleus. Both start at zero, increase over time and after reaching a maximum it decreases. Then both variables become constant. 
+
+mRNAR is available in high concentration, because of this there is a high concentration of receptors and in a short period of time MPL-receptor complexes are made. This explains the steep increase of DR and DR.N. DR.N supresses the synthesis of mRNAR. Meanwhile the concentration of mRNAR decreases. At some point the mRNAR concentration is less than 50% of the initial value. DR.N doesn't need to inhibit the synthesis of mRNAR anymore, so the concentration of DR.N decreases. Then mRNAR is synthesized until it is 50% of the initial value, after that an equilibrium is established in all 4 variables.
+
