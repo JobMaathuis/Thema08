@@ -86,19 +86,62 @@ MPL <- read.csv("MPL.csv")
 ```
 
 ```{r}
-parameters['D'] <- 14.59 * 1000 * 1/374.471 
-out <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
-
-plot(MPL$mRNA[MPL$dose == 0.1] ~ MPL$time[MPL$dose == 0.1],
-     xlab = "time", ylab = "mRNAr concentration")
+dose.0.1 <- MPL[MPL$dose == 0.1,]
+dose.0.3 <- MPL[MPL$dose == 0.3,]
 
 medians <- aggregate(MPL[,c("MPL_conc","mRNA","Free_receptor")],list(MPL$dose,MPL$time), median, na.rm=T)
 names(medians)[1:2] <- c("dose","time")
-points(medians$mRNA[MPL$dose == 0.1] ~ medians$time[MPL$dose == 0.1], col = "red")
+
+median.0.1 <- medians[medians$dose == 0.1,]
+median.0.3 <- medians[medians$dose == 0.3,]
+
+# Changes states of model from medians on time = 0
+state['mRNAr'] <- medians[medians$time == 0,]$mRNA
+state['R'] <- medians[medians$time == 0,]$Free_receptor
+
+# Change the duration of the model with time points from experimental data
+times <- unique(MPL$time)
+
+# Change dosis concentration parameter (D) for 0.1 dosis
+median_MPL_01 <- median(MPL$MPL_conc[MPL$dose==0.1], na.rm=T)
+parameters['D'] <- median_MPL_01 * 1000 * 1/374.471
+
+# Simulate model for 0.1 dosis
+out.0.1 <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
+
+# Change dosis concentration parameter (D) for 0.3 dosis
+median_MPL_03 <- median(MPL$MPL_conc[MPL$dose==0.3], na.rm=T)
+parameters['D'] <- median_MPL_03 * 1000 * 1/374.471
+
+# Simulate model for 0.3 dosis
+out.0.3 <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
+
+par(mfrow = c(2,2), cex = 0.8)
+
+# Plot mRNA plot for 0.1 dose
+plot(dose.0.1$mRNA ~ dose.0.1$time,
+     xlab = "time", ylab = "mRNAr concentration", main = "mRNAr plot of dosis 0.1", las =1)
+points(median.0.1$mRNA ~ median.0.1$time, col = "red", type = "l")
+lines(out.0.1[,1], out.0.1[,2])
+
+# Plot Free Receptor points for 0.1 dose
+plot(dose.0.1$Free_receptor ~ dose.0.1$time,
+     xlab = "time", ylab = "Free Receptor concentration", main = "Free Receptor plot of dosis 0.1", las = 1)
+points(median.0.1$Free_receptor ~ median.0.1$time, col = "red", type = "l")
+lines(out.0.1[,1], out.0.1[,3])
+
+# Plot mRNA plot for 0.3 dose
+plot(dose.0.3$mRNA ~ dose.0.3$time,
+     xlab = "time", ylab = "mRNAr concentration", main = "mRNAr plot of dosis 0.3", las =1 )
+points(median.0.3$mRNA ~ median.0.3$time, col = "red", type = "l")
+lines(out.0.3[,1], out.0.3[,2])
+
+# Plot Free Receptor points for 0.3 dose
+plot(dose.0.3$Free_receptor ~ dose.0.3$time,
+     xlab = "time", ylab = "Free Receptor concentration", main = "Free Receptor plot of dosis 0.3", las = 1)
+points(median.0.3$Free_receptor ~ median.0.3$time, col = "red", type = "l")
+lines(out.0.3[,1], out.0.3[,3])
 ```
-
-
-
 
 
 
