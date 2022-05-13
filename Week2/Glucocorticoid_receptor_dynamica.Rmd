@@ -64,5 +64,5 @@ DR is the density of the MPL-receptor complex and DR.N the concentration of MPL-
 
 mRNAR is available in high concentration, because of this there is a high concentration of receptors and in a short period of time MPL-receptor complexes are made. This explains the steep increase of DR and DR.N. DR.N supresses the synthesis of mRNAR. Meanwhile the concentration of mRNAR decreases. At some point the mRNAR concentration is less than 50% of the initial value. DR.N doesn't need to inhibit the synthesis of mRNAR anymore, so the concentration of DR.N decreases. Then mRNAR is synthesized until it is 50% of the initial value, after that an equilibrium is established in all 4 variables.
 
-At last, the DR(N) is probably the most import variable for the medicine to work. This is because the medicine need to get inside the nucleus in order to perform its function. When it is outside of the nucleus (inside the cytosol) it can not reach the genes and interact with it to influence the gene expression. 
+At last, the DR(N) is probably the most import variable for the medicine to work. This is because the medicine needs to get inside the nucleus in order to perform its function. When it is outside of the nucleus (inside the cytosol) it can not reach the genes and interact with it to influence the gene expression. 
 
