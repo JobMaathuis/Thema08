@@ -361,6 +361,7 @@ out.normal <- ode(y = state, times = t.steady, func = corticosteroid, parms = pa
 parameters['k.sR'] <- 0
 out.ksr <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
 
+par(mfrow = c(2,2))
 
 plot(out.normal[,2] ~ out.normal[,1], las = 1, type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
 lines(out.ksr[,2] ~ out.ksr[,1], col= "red")
@@ -373,6 +374,9 @@ lines(out.ksr[,4] ~ out.ksr[,1], col = "red")
 
 plot(out.normal[,5] ~ out.normal[,1], las = 1,type = "l", ylab = "DR(N) concentration", xlab = "time", main = "DR(N)")
 lines(out.ksr[,5] ~ out.ksr[,1], col = "red")
+
+legend(x = -22, y = 80, legend = c("normal", "ks_r to zero"), 
+       fill = c("black", "red"), xpd = NA, cex = 0.9)
 ```
 
 
