@@ -8,13 +8,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-## Assignment 1
+## Assignment 1: assess model validity
 
-### [1] Why is it best practice to plot the median for the experimental data? Explain in your report
+##### [1] Why is it best practice to plot the median for the experimental data? Explain in your report
 
 The median is less senstive for possible outliers. If a certain value is very high or very low this does not affect the value of the median. When compared to the mean, for example, this does get affected by an outlier.
 
-### [2] How do the results of the simulations depend on the dose and concentration of the drug? Compare the model variables mRNA, R with the experimental data by running the simulations adjusting dosis D and plot these to find the answer.
+##### [2] How do the results of the simulations depend on the dose and concentration of the drug? Compare the model variables mRNA, R with the experimental data by running the simulations adjusting dosis D and plot these to find the answer.
 
 ```{r}
 library(deSolve)
@@ -79,7 +79,7 @@ mRNAr: The concentration of mRNAr is influenced by the MPL concentration. When a
 R: The R concentration decreases less when using a lower MPL concentration. This is due to the fact that there is less MPL to create a MPL-receptor complex, so the R concentration stays high. The opposite can be seen when using a higher MPL concentration. The receptor concentration decreases very fast and has a lower end concentration. This is because there is more medicine to bind to the receptor, resulting in a lower receptor concentration.
 
 
-### [3] Are the results of the model in line with experimental data? If not, what could be the reason? Think of at least one explanation. Try to test it with simulations (you will get bonus points for that, your explanation does not need to be correct, but should be logical).
+##### [3] Are the results of the model in line with experimental data? If not, what could be the reason? Think of at least one explanation. Try to test it with simulations (you will get bonus points for that, your explanation does not need to be correct, but should be logical).
 
 ```{r}
 MPL <- read.csv("MPL.csv")
@@ -143,15 +143,95 @@ points(median.0.3$Free_receptor ~ median.0.3$time, col = "red", type = "l")
 lines(out.0.3[,1], out.0.3[,3])
 ```
 
+The results of the model are not in line with experimental data, but this differs between the plots. The free receptor plots (both doses) are somewhat similar of that of the model, except for one outlier at a time of 50. The mRNAr plots show way less similarities, where the experimental line fluctuates a lot. 
 
+This may be caused by the structure of the data. Firstly, the data is divided in a strange way. In the beginning there are a lot datapoints and at a higher time less. Secondly, there are not many datapoints per time unit to reliable fit the data. Lastly, the experimental data may contain some bias due to measurement errors or other factors that can influence the concentration of mRNAr or free receptor.
 
+## Assignment 2: simulate scenario’s
 
+[1] What would be the time course concentration of the activated drug-receptor complex if there was no auto-regulation of glucocorticoid receptor, i.e. if there was not effect of drug on the synthesis of the receptor mRNA? What formula needs to be changed? Adjust the model, run the simulation and plot the results to find out.
 
+```{r}
+library(deSolve)
 
+mRNA.dynamic <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) #- k.dRm * mRNAr
+    
+    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
+    
+    dDR <- k.on * D * R - k.T * DR
+    
+    dDR.N <- k.T * DR - k.re * DR.N
+    
+    list(c(dmRNAr, dR, dDR, dDR.N))
+  }) 
+}
 
+parameters <- c(ks.Rm = 2.90,
+                IC50.Rm = 26.2,
+                k.on = 0.00329,
+                k.T = 0.63,
+                k.re = 0.57,
+                Rf = 0.49,
+                k.dR = 0.0572,
+                k.dRm = 0.612,
+                k.sR = 3.22,
+                D = 20 * 1000 * 1/374.471 )
 
+state <- c(mRNAr = 4.74,
+           R = 267,
+           DR = 0,
+           DR.N = 0)
 
+times <- seq(0, 48)
 
+out <- ode(y = state, times = times, func = mRNA.dynamic, parms = parameters)
+plot(out, las = 1)
+```
 
+[2] What is the time course of receptor and mRNA concentrations when the drug treatment is stopped? So After the steady state is reached (at time t_steady), D should be set to zero and the simulation should continue from time t_steady till the new steady state is reached (t_steady_second). Run the simulations and plot the results from t = 0 till t_steady_second.
 
+```{r}
+library(deSolve)
+
+mRNA.dynamic <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
+    
+    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
+    
+    dDR <- k.on * D * R - k.T * DR
+    
+    dDR.N <- k.T * DR - k.re * DR.N
+    
+    list(c(dmRNAr, dR, dDR, dDR.N))
+  }) 
+}
+
+parameters <- c(ks.Rm = 2.90,
+                IC50.Rm = 26.2,
+                k.on = 0.00329,
+                k.T = 0.63,
+                k.re = 0.57,
+                Rf = 0.49,
+                k.dR = 0.0572,
+                k.dRm = 0.612,
+                k.sR = 3.22,
+                D = 20 * 1000 * 1/374.471 )
+
+state <- c(mRNAr = 4.74,
+           R = 267,
+           DR = 0,
+           DR.N = 0)
+
+t.steady <- seq(0, 35)
+t.steady.second <- seq(35, 100)
+
+out.steady <- ode(y = state, times = t.steady, func = mRNA.dynamic, parms = parameters)
+parameters['D'] <- 0
+out.steady.second <- ode(y = state, times = t.steady.second, func = mRNA.dynamic, parms = parameters)
+
+plot(out.steady, las = 1)
+```
 
