@@ -230,8 +230,13 @@ t.steady.second <- seq(35, 100)
 
 out.steady <- ode(y = state, times = t.steady, func = mRNA.dynamic, parms = parameters)
 parameters['D'] <- 0
-out.steady.second <- ode(y = state, times = t.steady.second, func = mRNA.dynamic, parms = parameters)
+out.steady.second <- ode(y = tail(out.steady, 1)[,-1], times = t.steady.second, func = mRNA.dynamic, parms = parameters)
 
-plot(out.steady, las = 1)
+
+plot(out.steady[,2] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
+lines( out.steady.second[,2] ~ out.steady.second[,1])
+
+plot(out.steady[,3] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "R concentration", xlab = "time", main = "R")
+lines( out.steady.second[,3] ~ out.steady.second[,1])
 ```
 
