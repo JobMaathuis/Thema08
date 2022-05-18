@@ -289,31 +289,31 @@ kre.decrease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms =
 par(mfrow = c(2,2))
 plot(kon.normal[,2] ~ kon.normal[,1], type = 'l', ylim = c(0, 5),
      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when k.on is changed")
-lines(kon.increase2[,2], col = 'red')
-lines(kon.incerease5[,2], col = 'green')
-lines(kon.decrease2[,2], col = 'blue')
-lines(kon.decrease5[,2], col = "orange")
+lines(kon.increase2[,2]~ kon.normal[,1], col = 'red')
+lines(kon.incerease5[,2]~ kon.normal[,1], col = 'green')
+lines(kon.decrease2[,2]~ kon.normal[,1], col = 'blue')
+lines(kon.decrease5[,2]~ kon.normal[,1], col = "orange")
 
 plot(kon.normal[,3] ~ kon.normal[,1], type = 'l',ylim = c(0, 300),
      xlab = "time", ylab = "free receptor", main = "R when k.on is changed")
-lines(kon.increase2[,3], col = 'red')
-lines(kon.incerease5[,3], col = 'green')
-lines(kon.decrease2[,3], col = 'blue')
-lines(kon.decrease5[,3], col = "orange")
+lines(kon.increase2[,3]~ kon.normal[,1], col = 'red')
+lines(kon.incerease5[,3]~ kon.normal[,1], col = 'green')
+lines(kon.decrease2[,3]~ kon.normal[,1], col = 'blue')
+lines(kon.decrease5[,3]~ kon.normal[,1], col = "orange")
 
 plot(kre.normal[,2] ~ kon.normal[,1], type = 'l', ylim = c(0, 5),
      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when k.er is changed")
-lines(kre.increase2[,2], col = 'red')
-lines(kre.incerease5[,2], col = 'green')
-lines(kre.decrease2[,2], col = 'blue')
-lines(kre.decrease5[,2], col = "orange")
+lines(kre.increase2[,2]~ kon.normal[,1], col = 'red')
+lines(kre.incerease5[,2]~ kon.normal[,1], col = 'green')
+lines(kre.decrease2[,2]~ kon.normal[,1], col = 'blue')
+lines(kre.decrease5[,2]~ kon.normal[,1], col = "orange")
 
 plot(kre.normal[,3] ~ kon.normal[,1], type = 'l',ylim = c(0, 300),
      xlab = "time", ylab = "free receptor", main = "R when k.er is changed")
-lines(kre.increase2[,3], col = 'red')
-lines(kre.incerease5[,3], col = 'green')
-lines(kre.decrease2[,3], col = 'blue')
-lines(kre.decrease5[,3], col = "orange")
+lines(kre.increase2[,3]~ kon.normal[,1], col = 'red')
+lines(kre.incerease5[,3]~ kon.normal[,1], col = 'green')
+lines(kre.decrease2[,3]~ kon.normal[,1], col = 'blue')
+lines(kre.decrease5[,3]~ kon.normal[,1], col = "orange")
 
 legend(x = -22, y = 620, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.9)
@@ -453,39 +453,46 @@ ksrm.decrease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms 
 
 ```{r}
 par(mfrow = c(2, 2))
-plot(ksrm.normal[,2] ~ ksrm.normal[,1], type = 'l', ylim = c(0, 5),
-     xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed")
-lines(ksrm.increase2[,2], col = 'red')
-lines(ksrm.incerease5[,2], col = 'green')
-lines(ksrm.decrease2[,2], col = 'blue')
-lines(ksrm.decrease5[,2], col = "orange")
+# plot(ksrm.normal[,2] ~ ksrm.normal[,1], type = 'l', ylim = c(0, 5),
+#      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed")
+plot(ksrm.increase2[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-1, 2),
+     xlab = "time (h)", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
+lines(ksrm.incerease5[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'green')
+lines(ksrm.decrease2[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'blue')
+lines(ksrm.decrease5[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = "orange")
 
-plot(ksrm.normal[,3] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 300),
-     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
-lines(ksrm.increase2[,3], col = 'red')
-lines(ksrm.incerease5[,3], col = 'green')
-lines(ksrm.decrease2[,3], col = 'blue')
-lines(ksrm.decrease5[,3], col = "orange")
+plot(ksrm.increase2[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-8, 18),
+     xlab = "time (h)", ylab = "R concentration", main = "R when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
+lines(ksrm.incerease5[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'green')
+lines(ksrm.decrease2[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'blue')
+lines(ksrm.decrease5[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = "orange")
 
+plot(ksrm.increase2[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-2, 5),
+     xlab = "time (h)", ylab = "DR concentration", main = "DR when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
+lines(ksrm.incerease5[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'green')
+lines(ksrm.decrease2[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'blue')
+lines(ksrm.decrease5[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = "orange")
 
-plot(ksrm.normal[,4] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
-     xlab = "time", ylab = "DR concentration", main = "DR when ks.Rm is changed")
-lines(ksrm.increase2[,4], col = 'red')
-lines(ksrm.incerease5[,4], col = 'green')
-lines(ksrm.decrease2[,4], col = 'blue')
-lines(ksrm.decrease5[,4], col = "orange")
-
-
-plot(ksrm.normal[,5] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
-     xlab = "time", ylab = "DR(N) concentration", main = "R when ks.Rm is changed")
-lines(ksrm.increase2[,5], col = 'red')
-lines(ksrm.incerease5[,5], col = 'green')
-lines(ksrm.decrease2[,5], col = 'blue')
-lines(ksrm.decrease5[,5], col = "orange")
+plot(ksrm.increase2[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-2, 5),
+     xlab = "time (h)", ylab = "DR(N) concentration", main = "DR(N) when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
+lines(ksrm.incerease5[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'green')
+lines(ksrm.decrease2[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'blue')
+lines(ksrm.decrease5[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = "orange")
 
 legend(x =-22, y = 100, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.8)
 ```
 
 * mRNAr 
-When looking at the mRNAr graph, the difference between using different mRNAr synthesis rates (ks.Rm) can be observed. As expected when looking at the line of the lower
+When there is a 2 or 5 fold decrease in ks.Rm, there is a lower rate synthesis of mRNAr. At the same time the rate of degradation also decreases, this leads to a higher mRNAr concentration. However, after some time the steady state (compared to the basic scenario) is reached, even though the rate of synthesis and degradation decreases. 
+When there is a 2 or 5 fold increase in ks.rm, there is a higher rate of syntesis of mRNAr. At the same time the rate of degradation also increase, this leads to a lower mRNAr concentration. However, it appears as if the 2 or 5 fold increase doesn't have a huge effect compared to the basic scenario. Furthermore after some time the same steady state has been reached. 
+
+* R
+To continue the mRNAr discussion, the R concentration is directly influenced by the mRNAr concentration. So when there is a 2 or 5 fold decrease in synthesis and degradation rate of mRNAr, which leads to a higher mRNAr concentration, there is also more R. Similarly, when there is a 2 or 5 fold increase in synthesis and degradation rate of mRNAr, wich leads to a lower mRNAr concentration quicker, there is also a lower R concentration. 
+
+* DR
+More R concentration leads to more medicine-receptor complexes, and a less R concentration leads to less medicine-receptor complexes. 
+
+
+* DR(N)
+More medicine=receptor complexes will be transferred into the nucleus when there is a higher R concentration. However when there is a lower R concentration leads to less transportation of medicine-receptor complexes in the nucleus. 
