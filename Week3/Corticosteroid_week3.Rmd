@@ -156,7 +156,7 @@ library(deSolve)
 
 corticosteroid <- function(t, state, paramters) {
   with(as.list(c(state, paramters)),{
-    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
+    dmRNAr <- ks.Rm * (1 - DR.N * 0 / (IC50.Rm + DR.N * 0)) - k.dRm * mRNAr
     
     dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
     
@@ -366,7 +366,8 @@ par(mfrow = c(2,2))
 plot(out.normal[,2] ~ out.normal[,1], las = 1, type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
 lines(out.ksr[,2] ~ out.ksr[,1], col= "red")
 
-plot(out.normal[,3] ~ out.normal[,1], las = 1, type = "l", ylab = "R concentration", xlab = "time", main = "R")
+plot(out.normal[,3] ~ out.normal[,1], las = 1, type = "l", ylab = "R concentration", xlab = "time", main = "R",
+     ylim = c(0, 275))
 lines(out.ksr[,3] ~ out.ksr[,1], col = "red")
 
 plot(out.normal[,4] ~ out.normal[,1], las = 1, type = "l", ylab = "DR concentration", xlab = "time", main = "DR")
@@ -379,7 +380,110 @@ legend(x = -22, y = 80, legend = c("normal", "ks_r to zero"),
        fill = c("black", "red"), xpd = NA, cex = 0.9)
 ```
 
+(mRNAr is being discusses last)
+
+* R
+The Receptor concentration decreases, because no more receptor is being synthesised.
+
+* DR
+The medicine-receptor complex decreases, becuase no more receptors are available for the medicine to bind to form medicine-receptor complexes
+
+* DR(N)
+The nucleus medicine-receptor complex decreases, because the DR concentration also decreases. This also results in less medicine-receptor complexes in the nucleus
+
+* mRNAr
+The mRNAr concentration increases, when the receptor synthesis stops. This is because, as previously described, the DR(N) decreases. This will never reach the IC50 value, and therefore the mRNA synthesis is always 'on'.
+
+[5] What is the dynamic of the system when the baseline rate of production of mRNA of the receptor is increased or decreased 2 or 5 fold (recalculate the rate of mRNA degradation so that the steady-state assumption at baseline (without the drug) is still valid, i.e. mRNA levels are constant when there is not drug)? Mind you: ks_Rm values should be changed, but we know that if without the drug the system is at steady-state then kd_Rm = ks_Rm/Rm0. Therefore if we change ks_Rm we need to change kd_Rm as well. Also after we recalculate the value of kd_Rm for the baseline conditions, the simulations should be run with drug present. Simulations should be run for 4 different scenarios:
+
+* ks_Rm = 2.9/5 and kd_Rm=2.9/5/4.74
+* ks_Rm = 2.9/2 and kd_Rm=2.9/2/4.74
+* ks_Rm = 2.9*2 and kd_Rm=2.9*2/4.74
+* ks_Rm = 2.9*5 and kd_Rm=2.9*5/4.74
+
+```{r}
+library('deSolve')
+
+corticosteroid <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
+    
+    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
+    
+    dDR <- k.on * D * R - k.T * DR
+    
+    dDR.N <- k.T * DR - k.re * DR.N
+    
+    list(c(dmRNAr, dR, dDR, dDR.N))
+  }) 
+}
+
+parameters <- c(ks.Rm = 2.90,
+                IC50.Rm = 26.2,
+                k.on = 0.00329,
+                k.T = 0.63,
+                k.re = 0.57,
+                Rf = 0.49,
+                k.dR = 0.0572,
+                k.dRm = 0.612,
+                k.sR = 3.22,
+                D = 20 * 1000 * 1/374.471 )
+
+state <- c(mRNAr = 4.74,
+           R = 267,
+           DR = 0,
+           DR.N = 0)
+
+t.steady <- seq(0, 48)
+
+ksrm.normal <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+parameters['ks.Rm'] <- 2.90 * 2
+parameters['k.dRm'] <- 2.90 * 2 / 4.74
+ksrm.increase2 <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+parameters['ks.Rm'] <- 2.90 * 5
+parameters['k.dRm'] <- 2.90 * 5 / 4.74
+ksrm.incerease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+parameters['ks.Rm'] <- 2.90 / 2
+parameters['k.dRm'] <- 2.90 / 2 / 4.74
+ksrm.decrease2 <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+parameters['ks.Rm'] <- 2.90 / 5
+parameters['k.dRm'] <- 2.90 / 5 / 4.74
+ksrm.decrease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+```
+
+```{r}
+par(mfrow = c(2, 2))
+plot(ksrm.normal[,2] ~ ksrm.normal[,1], type = 'l', ylim = c(0, 5),
+     xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed")
+lines(ksrm.increase2[,2], col = 'red')
+lines(ksrm.incerease5[,2], col = 'green')
+lines(ksrm.decrease2[,2], col = 'blue')
+lines(ksrm.decrease5[,2], col = "orange")
+
+plot(ksrm.normal[,3] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 300),
+     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
+lines(ksrm.increase2[,3], col = 'red')
+lines(ksrm.incerease5[,3], col = 'green')
+lines(ksrm.decrease2[,3], col = 'blue')
+lines(ksrm.decrease5[,3], col = "orange")
 
 
+plot(ksrm.normal[,4] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
+     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
+lines(ksrm.increase2[,4], col = 'red')
+lines(ksrm.incerease5[,4], col = 'green')
+lines(ksrm.decrease2[,4], col = 'blue')
+lines(ksrm.decrease5[,4], col = "orange")
 
 
+plot(ksrm.normal[,5] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
+     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
+lines(ksrm.increase2[,5], col = 'red')
+lines(ksrm.incerease5[,5], col = 'green')
+lines(ksrm.decrease2[,5], col = 'blue')
+lines(ksrm.decrease5[,5], col = "orange")
+
+legend(x =-22, y = 600, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
+       fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.8)
+
+```
