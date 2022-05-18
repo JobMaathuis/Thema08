@@ -469,7 +469,7 @@ lines(ksrm.decrease5[,3], col = "orange")
 
 
 plot(ksrm.normal[,4] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
-     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
+     xlab = "time", ylab = "DR concentration", main = "DR when ks.Rm is changed")
 lines(ksrm.increase2[,4], col = 'red')
 lines(ksrm.incerease5[,4], col = 'green')
 lines(ksrm.decrease2[,4], col = 'blue')
@@ -477,13 +477,15 @@ lines(ksrm.decrease5[,4], col = "orange")
 
 
 plot(ksrm.normal[,5] ~ ksrm.normal[,1], type = 'l',ylim = c(0, 50),
-     xlab = "time", ylab = "free receptor", main = "R when ks.Rm is changed")
+     xlab = "time", ylab = "DR(N) concentration", main = "R when ks.Rm is changed")
 lines(ksrm.increase2[,5], col = 'red')
 lines(ksrm.incerease5[,5], col = 'green')
 lines(ksrm.decrease2[,5], col = 'blue')
 lines(ksrm.decrease5[,5], col = "orange")
 
-legend(x =-22, y = 600, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
+legend(x =-22, y = 100, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.8)
-
 ```
+
+* mRNAr 
+When looking at the mRNAr graph, the difference between using different mRNAr synthesis rates (ks.Rm) can be observed. As expected when looking at the line of the lower
