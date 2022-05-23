@@ -193,6 +193,22 @@ plot(out, las = 1)
 [2] What is the time course of receptor and mRNA concentrations when the drug treatment is stopped? So After the steady state is reached (at time t_steady), D should be set to zero and the simulation should continue from time t_steady till the new steady state is reached (t_steady_second). Run the simulations and plot the results from t = 0 till t_steady_second.
 
 ```{r}
+library('deSolve')
+
+corticosteroid <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
+    
+    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
+    
+    dDR <- k.on * D * R - k.T * DR
+    
+    dDR.N <- k.T * DR - k.re * DR.N
+    
+    list(c(dmRNAr, dR, dDR, dDR.N))
+  }) 
+}
+
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -482,6 +498,8 @@ lines(ksrm.decrease5[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = "orange")
 legend(x =-22, y = 100, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.8)
 ```
+
+The graphs above are all with respect to the normal condition. This means that all of the graphs are substracted from the normal condition, and the graphs show the difference when compared to the normal condition.
 
 * mRNAr 
 When there is a 2 or 5 fold decrease in ks.Rm, there is a lower rate synthesis of mRNAr. At the same time the rate of degradation also decreases, this leads to a higher mRNAr concentration. However, after some time the steady state (compared to the basic scenario) is reached, even though the rate of synthesis and degradation decreases. 
