@@ -15,18 +15,50 @@ Using a model
 
 
 # Method
-Below a flow diagram and the differential equations of glucorticoide receptor dynamics describe the model. First data from an experiment is compared with simulation data, to asses model validity. Then results of a change in the model or modelparameters are compared to a basic scenario. 
+First data from an experiment is compared with simulation data, to asses model validity. Then results of a change in the model or modelparameters are compared to a basic scenario. 
+
+
+Below a flow diagram and the differential equations of glucorticoide receptor dynamics describe the model. 
+
 
 ![](./Model.png){width=49%} 
 ![](./equations.png){width=49%}
 
-## Assignment 1: assess model validity
+Here, D is the plasma concentration of MPL, mRNAR the quantity of receptor mRNA, R the density of glucocorticoide receptor in the cytosol, DR the density of the MPL-receptor complex and DR(N) the quantity of the MPL-receptor complex in the nucleus. Ks_Rm is the zero order rate constant of mRNA synthesis and kd_Rm the first order rate constant of mRNA degradation. Ks_R and kd_R are the first order rate constant of respectively the synthesis and degradation of the receptor. KT is the first order rate constant for the translocation of the MPL-receptor complex to the nucleus and kre is the first order rate constant for the transport of the receptor from the nucleus to the cytosol. Kon is the second order rate constant for the formation of the MPL-receptor complex. Rf is the fraction free receptor that is recycled and IC_50Rm is the concentration DR(N) where the synthesis of receptor mRNA decreases till 50% of the initial value. 
 
-[1] Why is it best practice to plot the median for the experimental data? Explain in your report
+### Parameters and values
+Here follow the parameters and values used in the model, these are the values for the basic scenario. 
 
-The median is less sensitive for possible outliers. If a certain value is very high or very low this does not affect the value of the median. When compared to the mean, for example, this does get affected by an outlier.
+| Parameter                 | Value               |
+|---------------------------|---------------------|
+|ks_Rm (fmol/g liver/h)     |2.90                 |
+|IC50_Rm (fmol/mg protein)  |26.2                 |
+|kon (L/nmol/h)             |0.00329              |
+|kT (1 / h)                 |0.63                 |
+|kre (1 / h)                |0.57                 |
+|Rf                         |0.49                 |
+|kd_R (1 / h)               |0.0572               |
+|kd_Rm                      |0.612                |
+|ks_r                       |3.22                 | 
+|D (nmol/L)                 |20 * 1000 * 1/374.471|
 
-[2] How do the results of the simulations depend on the dose and concentration of the drug? Compare the model variables mRNA, R with the experimental data by running the simulations adjusting dosis D and plot these to find the answer.
+### Initial values
+Here follow the initial values of the variables, these are the values for the basic scenario.
+
+| Variables                 | Value               |
+|---------------------------|---------------------|
+|mRNAR (fmol / g liver)     |4.74                 |
+|R (fmol/mg protein)        |267                  |
+|DR (fmol/mg protein)       |0                    |
+|DR(N) (fmol/mg protein)    |0                    |
+
+
+## Assess model validity
+To asses model validity, data from experimental data for two doses are compared with the simulation data. In the experiment MPL was administered for 7 days under constant infusion of 0.1 or 0.3 mg drug/kg rat/h. The concentration of the drug, receptor mRNA and the free receptor were measured. 
+
+
+### Dependence of the results on the dose and concentration of the drug
+The model variables mRNA,= and R are compared with the experimental data by running simulations and adjusting dosis D. 
 
 ```{r warning=FALSE}
 library(deSolve)
@@ -71,29 +103,31 @@ out.high <- ode(y = state, times = times, func = corticosteroid, parms = paramet
 parameters['D'] <- 1 * 1000 * 1/374.471 
 out.low <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
 
+par(mfrow = c(1,2), mar = c(8.1, 4.1, 8.1, 1.1))
+
 plot(out.normal[,1], out.normal[,2], las = 1, main = "mRNAr", ylim = c(0, 5), type = "l",
      xlab = "time (h)", ylab = "receptor mRNA")
 lines(out.high[,2] ~ out.normal[,1], col = "red")
 lines(out.low[,2] ~ out.normal[,1], col = "green")
-legend(x = 35, y = 2, legend = c("low dosis", "normal dosis", "high dosis"), fill = c("green", "black", "red"))
 
 plot(out.normal[,1], out.normal[,3], las = 1, main = "R", ylim = c(0, 275), type = "l",
      xlab = "time (h)", ylab = "free receptor density ")
 lines(out.high[,3] ~ out.normal[,1], col = "red")
 lines(out.low[,3] ~ out.normal[,1], col = "green")
-legend(x = 35, y = 200, legend = c("low dosis", "normal dosis", "high dosis"), fill = c("green", "black", "red"))
+
+legend(x = -27, y = -100, legend = c("low dosis", "normal dosis", "high dosis"), fill = c("green", "black", "red"), cex = 0.9, xpd=NA)
 ```
 
 
 * mRNAr  
 The concentration of mRNAr is influenced by the MPL concentration. When a lower MPL concentration is used the mRNAr is decreasing slower. The DR(N) affects the mRNAr synthesis, this DR(N) concentration is lower when there is less MPL and therefore the mRNAr does not decrease as much. When a higher dosis is used the mRNAr is decreasing more rapidly and a lower end concentration at equilibrium can be seen. This is becuase the medicine can bind to more receptors, which results in more DR and therefore more DR(N). The IC50 value is reached earlier and the mRNAr concentration gets decreased.
 
-
 * R  
 The R concentration decreases less when using a lower MPL concentration. This is due to the fact that there is less MPL to create a MPL-receptor complex, so the R concentration stays high. The opposite can be seen when using a higher MPL concentration. The receptor concentration decreases very fast and has a lower end concentration. This is because there is more medicine to bind to the receptor, resulting in a lower receptor concentration.
 
 
-[3] Are the results of the model in line with experimental data? If not, what could be the reason? Think of at least one explanation. Try to test it with simulations (you will get bonus points for that, your explanation does not need to be correct, but should be logical).
+### Model results vs experimental data
+To see if the model results are inline with the experimental data, a mRNA plot is made. Here it is easy to compare the model (black line) with the experiment (datapoint). The median (red line) is also in the plot because the median is less sensitive for possible outliers. If a certain value is very high or very low this does not affect the value of the median. When compared to the mean, for example, this does get affected by an outlier.
 
 ```{r}
 MPL <- read.csv("MPL.csv")
@@ -162,13 +196,16 @@ The results of the model are not in line with experimental data, but this differ
 This may be caused by the structure of the data. Firstly, the data is divided in a strange way. In the beginning there are a lot datapoints and at a higher time less. Secondly, there are not many datapoints per time unit to reliable fit the data. Lastly, the experimental data may contain some bias due to measurement errors or other factors that can influence the concentration of mRNAr or free receptor.
 
 
-## Assignment 2: simulate scenario’s
+## Simulate scenario’s
+Here different scenarios are simulated to see what happends if the model and model parameters are changed, the results are compared to the basic scenario. 
 
-[1] What would be the time course concentration of the activated drug-receptor complex if there was no auto-regulation of glucocorticoid receptor, i.e. if there was not effect of drug on the synthesis of the receptor mRNA? What formula needs to be changed? Adjust the model, run the simulation and plot the results to find out.
+
+### No auto-regulation of glucocorticoid receptor
+Here the time course concentration of the activated drug-receptor complex is plotted if there was no effect of drug on the synthesis of the receptor mRNA. The first formula has to be changed, because DR(N) has an effect on the synthesis of the receptor mRNA. 
 
 ```{r}
-corticosteroid <- function(t, state, paramters) {
-  with(as.list(c(state, paramters)),{
+corticosteroid <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)),{
     dmRNAr <- ks.Rm * (1 - DR.N * 0 / (IC50.Rm + DR.N * 0)) - k.dRm * mRNAr
     
     dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
@@ -199,11 +236,31 @@ state <- c(mRNAr = 4.74,
 
 times <- seq(0, 48)
 
-out <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
-plot(out, las = 1)
+out.changed <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
+
+par(mfrow = c(2,2))
+
+plot(out.normal[,2] ~ out.normal[,1], las = 1, type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr", ylim = c(0,5))
+lines(out.changed[,2] ~ out.changed[,1], col= "red")
+
+plot(out.normal[,3] ~ out.normal[,1], las = 1, type = "l", ylab = "R concentration", xlab = "time", main = "R",
+     ylim = c(0, 275))
+lines(out.changed[,3] ~ out.changed[,1], col = "red")
+
+plot(out.normal[,4] ~ out.normal[,1], las = 1, type = "l", ylab = "DR concentration", xlab = "time", main = "DR", ylim = c(0,60))
+lines(out.changed[,4] ~ out.changed[,1], col = "red")
+
+plot(out.normal[,5] ~ out.normal[,1], las = 1,type = "l", ylab = "DR(N) concentration", xlab = "time", main = "DR(N)", ylim = c(0,60))
+lines(out.changed[,5] ~ out.changed[,1], col = "red")
+
+legend(x = -25, y = 115, legend = c("normal", "No auto-regulation \nof glucocorticoid receptor"), 
+       fill = c("black", "red"), xpd = NA, cex = 0.8)
 ```
 
-[2] What is the time course of receptor and mRNA concentrations when the drug treatment is stopped? So After the steady state is reached (at time t_steady), D should be set to zero and the simulation should continue from time t_steady till the new steady state is reached (t_steady_second). Run the simulations and plot the results from t = 0 till t_steady_second.
+When there is no auto-regulation of glucocorticoid receptor, the mRNAr concentration stays steady at the initial value. This is because DR(N) does not inhibit the sythesis of mRNAr. So mRNAr makes receptors, the mRNAr concentration decrease, but also new mRNAr is synthesized, the mRNAr concentration increases. this leads to a steady concentration of mRNAr and a higher concentration of receptor. This also leads to more medicine-receptor complexes in the cytosol (DR) and nucleus (DR(N)).
+
+### Drug treatment is stopped
+The time course of receptor and mRNA concentrations is plotted when the drug treatment is stopped. So After the steady state is reached, D is set to zero and the simulation continues till the new steady state is reached.
 
 ```{r}
 corticosteroid <- function(t, state, paramters) {
@@ -243,14 +300,27 @@ out.steady <- ode(y = state, times = t.steady, func = corticosteroid, parms = pa
 parameters['D'] <- 0
 out.steady.second <- ode(y = tail(out.steady, 1)[,-1], times = t.steady.second, func = corticosteroid, parms = parameters)
 
+par(mfrow = c(2,2))
+
 plot(out.steady[,2] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
 lines( out.steady.second[,2] ~ out.steady.second[,1])
 
 plot(out.steady[,3] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "R concentration", xlab = "time", main = "R")
 lines( out.steady.second[,3] ~ out.steady.second[,1])
+
+plot(out.steady[,4] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "DR", xlab = "time", main = "R")
+lines( out.steady.second[,4] ~ out.steady.second[,1])
+
+plot(out.steady[,5] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "DR(N)", xlab = "time", main = "R")
+lines( out.steady.second[,5] ~ out.steady.second[,1])
 ```
 
-[3] Different corticosteroids show different association rates from receptors (kon) and different dissociation rates (in this model reflected by kre). Assuming the same concentrations of the drug, what is the effect of different values of kon and kre (consider 2 and 5 times increase and decrease of both parameters separately) on the receptor and mRNA dynamics? Adjust kon and kre as below and plot the results of the simulation for each change. Note: Simulations should be run for 4 new values of kon: 0.00329/5, 0.00329/2, 0.00329\*2 and 0.003291\*5. The results should be compared to the basic scenario when kon=0.00329 Separately, simulations should be run for 4 new values of kre: 0.57/5, 0.57/2, 0.57\*2 and 0.57*5. The results should be compared to the basic scenario when kre= 0.57
+We see that the mRNAr and R concentration first decrease a lot, because there is drug present. And then reaches a steady state, then when the drug treatment is stopped, the mRNAr and receptor concentration increase back to the initial value. This is because medicine-receptor complexes are no longer made, and the synthesis of mRNAr is no longer inhibited. 
+
+### Different association and dissociation rates from receptors
+Different corticosteroids show different association rates from receptors (kon) and different dissociation rates (in this model reflected by kre). The same concentrations of the drug is assumed and the effect of different values of kon and kre (consider 2 and 5 times increase and decrease of both parameters separately) on the receptor and mRNA dynamics is plotted. kon and kre are adjusted as below and plot the results of the simulation for each change. 
+Simulations are run for 4 new values of kon: 0.00329/5, 0.00329/2, 0.00329\*2 and 0.003291\*5. The results are compared to the basic scenario when kon=0.00329
+Separately, simulations are run for 4 new values of kre: 0.57/5, 0.57/2, 0.57\*2 and 0.57*5. The results should are compared to the basic scenario when kre= 0.57
 
 ```{r}
 corticosteroid <- function(t, state, paramters) {
@@ -359,9 +429,8 @@ When the k.on rate is increased, the R concentration decreases because more medi
 When the k.er rate is increases, the R concentration increases because more receptors are being translocated from the nucleus to the cytosol. When the k.er rate is decreased, the R concentration decreases because less receptort are being translocated from the nucleus to the cytosol.
 
 
-[4] What would happen if the synthesis of the receptor was completely blocked? Which parameter needs to be put to zero? Adjust the parameter, run the simulations and plot the results.
-
-The ks_r needs to be put to zero, because this is the rate of the receptor synthesis
+### Sythesis of receptor is blocked completely
+The ks_r parameter needs to be put to zero, because this is the rate of the receptor synthesis. 
 ```{r}
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
@@ -418,7 +487,9 @@ The nucleus medicine-receptor complex decreases, because the DR concentration al
 * mRNAr  
 The mRNAr concentration increases, when the receptor synthesis stops. This is because, as previously described, the DR(N) decreases. This will never reach the IC50 value, and therefore the mRNA synthesis is always 'on'.
 
-[5] What is the dynamic of the system when the baseline rate of production of mRNA of the receptor is increased or decreased 2 or 5 fold (recalculate the rate of mRNA degradation so that the steady-state assumption at baseline (without the drug) is still valid, i.e. mRNA levels are constant when there is not drug)? Mind you: ks_Rm values should be changed, but we know that if without the drug the system is at steady-state then kd_Rm = ks_Rm/Rm0. Therefore if we change ks_Rm we need to change kd_Rm as well. Also after we recalculate the value of kd_Rm for the baseline conditions, the simulations should be run with drug present. Simulations should be run for 4 different scenarios:
+### Different rates of mRNAR production
+The dynamic of the system is plotted when the baseline rate of production of mRNA of the receptor is increased or decreased 2 or 5 fold (recalculate the rate of mRNA degradation so that the steady-state assumption at baseline (without the drug) is still valid, i.e. mRNA levels are constant when there is not drug). ks_Rm values are changed, without the drug the system is at steady-state this means that kd_Rm = ks_Rm/mRNAr. Therefore if ks_Rm is changed, kd_Rm has to be changed as well. 
+Simulations are run for 4 different scenarios:
 
 * ks_Rm = 2.9/5 and kd_Rm=2.9/5/4.74
 * ks_Rm = 2.9/2 and kd_Rm=2.9/2/4.74
