@@ -9,9 +9,21 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Introduction
 
-Glucocorticoids (GC) are a type of steroid hormones which are used by the immune system to repress inflammation. For this reason GCs are used as a medicine to treat inflammation in inflammatory diseases like asthma. The anti-inflammatory process caused by GCs can be divided into two processes: trans-repression and trans-activation. In trans-repression some inflammatory genes are suppressed by binding of the GCs to GC receptors (GR). This causes histon deacetylation of these genes and this causes for less transcription. In trans-activation the GRs activate transcription of anti-inflammatory genes by binding to DNA recognition sites on these genes. This activation is achieved by histon acetylation.
+Inflammation is an essential process of the immune system to encounter offending agents. However, in some diseases this results in extreme symptoms which may be dangerous or sometimes even life-threatening. To regulate inflammation the body uses glucocorticoids (GC), which are a type of steroid hormones that represses inflammation. This anti-inflammatory function of GC is activated by binding of the GCs to the GC receptors (GR), forming GC-GR complexes. These complexes bind to different genes, resulting in both its anti-inflammatory function it is known for and inhibition of the GR mRNA synthesis. To get insight in this process and the effect of the variables, the process can be modelled [1]. 
 
-Using a model
+Going back to the GC, GCs are part of the immune system in which they have multiple functions. The most well-known function of GC is the repression of inflammation. Because of this reason it is also used as a medicine to treat acute and chronic inflammation diseases like asthma or Crohn’s disease, in which it is very effective [1][2][3]. They indirectly activate inflammatory genes and repress anti-inflammatory genes [1]. 
+
+This activation and repression of genes is achieved by binding to GR, which are found in the cytoplasm. When a GC binds to a GR, it is activated. This activation results in the translocation of this GC-GR complex to the nucleus [1][4][5]. Once in the nucleus, the complex can bind to the GC response element (GRE) in the promoter region of the different genes [1]. Most of these genes are then activated and provide anti-inflammatory products, such as chemokines and cytokines [6]. However, the GC-GR complex also binds to the GRE in the GR gene. This binding supresses the mRNA transcription [1].
+
+Since the GR represses its own mRNA synthesis, it may not always be effective to add more GCs. To get an understanding of the system and its variables, a model can be made. Various simulations are performed in this research to see how this may effect the system as  a whole.
+
+[1] https://sci-hub.se/10.1111/j.1476-5381.2010.01199.x
+[2] https://link.springer.com/article/10.1007/s11154-007-9059-8
+[3] https://www.frontiersin.org/articles/10.3389/fimmu.2019.01545/full
+[4] https://www.sciencedirect.com/science/article/pii/S1521694211001537
+[5] https://www.sciencedirect.com/science/article/pii/S0167478104001794
+[6] https://link.springer.com/chapter/10.1007/164_2016_98
+
 
 
 # Method
