@@ -65,8 +65,10 @@ To asses model validity, data from experimental data for two doses are compared 
 The model variables mRNA and R are compared with the experimental data by running simulations and adjusting dosis D. 
 
 ```{r warning=FALSE}
+# Load deSolve package
 library(deSolve)
 
+# Function with the models differential equations
 corticosteroid <- function(t, state, paramters) {
   with(as.list(c(state, paramters)),{
     dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
@@ -81,6 +83,7 @@ corticosteroid <- function(t, state, paramters) {
   }) 
 }
 
+# Parameters
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -92,33 +95,41 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
-state <- c(mRNAr = 4.74,
+# Initial values
+state<- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Time frame of 2 days
 times <- seq(0, 48)
 
 out.normal <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
 
+# Increase medicine dose and simulate it
 parameters['D'] <- 80 * 1000 * 1/374.471 
 out.high <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
 
+#Decrease medicine dose and simulate it
 parameters['D'] <- 1 * 1000 * 1/374.471 
 out.low <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
 
+# Create two plots in one figure
 par(mfrow = c(1,2), mar = c(8.1, 4.1, 8.1, 1.1))
 
+# mRNAr plot
 plot(out.normal[,1], out.normal[,2], las = 1, main = "mRNAr", ylim = c(0, 5), type = "l",
      xlab = "time (h)", ylab = "receptor mRNA")
 lines(out.high[,2] ~ out.normal[,1], col = "red")
 lines(out.low[,2] ~ out.normal[,1], col = "green")
 
+# R plot
 plot(out.normal[,1], out.normal[,3], las = 1, main = "R", ylim = c(0, 275), type = "l",
      xlab = "time (h)", ylab = "free receptor density ")
 lines(out.high[,3] ~ out.normal[,1], col = "red")
 lines(out.low[,3] ~ out.normal[,1], col = "green")
 
+# Add legend
 legend(x = -27, y = -100, legend = c("low dosis", "normal dosis", "high dosis"), fill = c("green", "black", "red"), cex = 0.9, xpd=NA)
 ```
 
@@ -138,12 +149,15 @@ MPL <- read.csv("MPL.csv")
 ```
 
 ```{r}
+# Get experimental data for different doses
 dose.0.1 <- MPL[MPL$dose == 0.1,]
 dose.0.3 <- MPL[MPL$dose == 0.3,]
 
+# Get medians
 medians <- aggregate(MPL[,c("MPL_conc","mRNA","Free_receptor")],list(MPL$dose,MPL$time), median, na.rm=T)
 names(medians)[1:2] <- c("dose","time")
 
+# Get medians per dosis
 median.0.1 <- medians[medians$dose == 0.1,]
 median.0.3 <- medians[medians$dose == 0.3,]
 
@@ -208,7 +222,8 @@ Here different scenarios are simulated to see what happends if the model and mod
 Here the time course concentration of the activated drug-receptor complex is plotted if there was no effect of drug on the synthesis of the receptor mRNA. The first formula has to be changed, because DR(N) has an effect on the synthesis of the receptor mRNA. 
 
 ```{r}
-corticosteroid <- function(t, state, parameters) {
+# New function with changed formula
+corticosteroid.changed <- function(t, state, parameters) {
   with(as.list(c(state, parameters)),{
     dmRNAr <- ks.Rm * (1 - DR.N * 0 / (IC50.Rm + DR.N * 0)) - k.dRm * mRNAr
     
@@ -222,6 +237,7 @@ corticosteroid <- function(t, state, parameters) {
   }) 
 }
 
+# Parameter values
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -233,30 +249,39 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
+# Initial state
 state <- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Time frame for 2 days
 times <- seq(0, 48)
 
-out.changed <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
+# Simulate model with changed formula
+out.changed <- ode(y = state, times = times, func = corticosteroid.changed, parms = parameters)
 
+# Multiple plots in one figure
 par(mfrow = c(2,2))
 
+# Plot mRNAr concentration
 plot(out.normal[,2] ~ out.normal[,1], las = 1, type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr", ylim = c(0,5))
 lines(out.changed[,2] ~ out.changed[,1], col= "red")
 
+# Plot R concentration
 plot(out.normal[,3] ~ out.normal[,1], las = 1, type = "l", ylab = "R concentration", xlab = "time", main = "R",
      ylim = c(0, 275))
 lines(out.changed[,3] ~ out.changed[,1], col = "red")
 
+# Plot DR
 plot(out.normal[,4] ~ out.normal[,1], las = 1, type = "l", ylab = "DR concentration", xlab = "time", main = "DR", ylim = c(0,60))
 lines(out.changed[,4] ~ out.changed[,1], col = "red")
 
+# Plot DR(N)
 plot(out.normal[,5] ~ out.normal[,1], las = 1,type = "l", ylab = "DR(N) concentration", xlab = "time", main = "DR(N)", ylim = c(0,60))
 lines(out.changed[,5] ~ out.changed[,1], col = "red")
 
+# Add legend
 legend(x = -25, y = 115, legend = c("normal", "No auto-regulation \nof glucocorticoid receptor"), 
        fill = c("black", "red"), xpd = NA, cex = 0.8)
 ```
@@ -267,20 +292,7 @@ When there is no auto-regulation of glucocorticoid receptor, the mRNAr concentra
 The time course of receptor and mRNA concentrations is plotted when the drug treatment is stopped. So After the steady state is reached, D is set to zero and the simulation continues till the new steady state is reached.
 
 ```{r}
-corticosteroid <- function(t, state, paramters) {
-  with(as.list(c(state, paramters)),{
-    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
-    
-    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
-    
-    dDR <- k.on * D * R - k.T * DR
-    
-    dDR.N <- k.T * DR - k.re * DR.N
-    
-    list(c(dmRNAr, dR, dDR, dDR.N))
-  }) 
-}
-
+# Parameter values
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -292,29 +304,39 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
+# Initial values
 state <- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Time frame until first steady state and till second steady state
 t.steady <- seq(0, 35)
 t.steady.second <- seq(35, 100)
 
+# Simulate model for basic scenario
 out.steady <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
+
+# Simulate model for when drug treatment has stopped
 parameters['D'] <- 0
 out.steady.second <- ode(y = tail(out.steady, 1)[,-1], times = t.steady.second, func = corticosteroid, parms = parameters)
 
+# Multiple plots in one figure
 par(mfrow = c(2,2))
 
+# Plot mRNAr concentration
 plot(out.steady[,2] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
 lines( out.steady.second[,2] ~ out.steady.second[,1])
 
+# Plot R concentration
 plot(out.steady[,3] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "R concentration", xlab = "time", main = "R")
 lines( out.steady.second[,3] ~ out.steady.second[,1])
 
+# Plot DR 
 plot(out.steady[,4] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "DR", xlab = "time", main = "DR")
 lines( out.steady.second[,4] ~ out.steady.second[,1])
 
+# Plot DR(N)
 plot(out.steady[,5] ~ out.steady[,1], las = 1, xlim = c(0, 100), type = "l", ylab = "DR(N)", xlab = "time", main = "DR(N)")
 lines( out.steady.second[,5] ~ out.steady.second[,1])
 ```
@@ -327,20 +349,7 @@ Simulations are run for 4 new values of kon: 0.00329/5, 0.00329/2, 0.00329\*2 an
 Separately, simulations are run for 4 new values of kre: 0.57/5, 0.57/2, 0.57\*2 and 0.57*5. The results should are compared to the basic scenario when kre= 0.57
 
 ```{r}
-corticosteroid <- function(t, state, paramters) {
-  with(as.list(c(state, paramters)),{
-    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
-    
-    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
-    
-    dDR <- k.on * D * R - k.T * DR
-    
-    dDR.N <- k.T * DR - k.re * DR.N
-    
-    list(c(dmRNAr, dR, dDR, dDR.N))
-  }) 
-}
-
+# Parameter values
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -352,13 +361,16 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
+# Initial state
 state <- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Time frame for 2 days
 t.steady <- seq(0, 48)
 
+# Simulate different scenarios
 kon.normal <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
 parameters['k.on'] <- 0.00329 * 2
 kon.increase2 <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
@@ -384,7 +396,10 @@ kre.decrease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms =
 ```
 
 ```{r}
+# Multiple plots in one figure
 par(mfrow = c(2,2))
+
+# Plot scenarios for mRNAr concentration
 plot(kon.normal[,2] ~ kon.normal[,1], type = 'l', ylim = c(0, 5),
      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when k.on is changed")
 lines(kon.increase2[,2]~ kon.normal[,1], col = 'red')
@@ -392,6 +407,7 @@ lines(kon.incerease5[,2]~ kon.normal[,1], col = 'green')
 lines(kon.decrease2[,2]~ kon.normal[,1], col = 'blue')
 lines(kon.decrease5[,2]~ kon.normal[,1], col = "orange")
 
+# Plot scenarios for R concentration
 plot(kon.normal[,3] ~ kon.normal[,1], type = 'l',ylim = c(0, 300),
      xlab = "time", ylab = "free receptor", main = "R when k.on is changed")
 lines(kon.increase2[,3]~ kon.normal[,1], col = 'red')
@@ -399,6 +415,7 @@ lines(kon.incerease5[,3]~ kon.normal[,1], col = 'green')
 lines(kon.decrease2[,3]~ kon.normal[,1], col = 'blue')
 lines(kon.decrease5[,3]~ kon.normal[,1], col = "orange")
 
+# Plot scenarios for mRNAr concentration
 plot(kre.normal[,2] ~ kon.normal[,1], type = 'l', ylim = c(0, 5),
      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when k.er is changed")
 lines(kre.increase2[,2]~ kon.normal[,1], col = 'red')
@@ -406,6 +423,7 @@ lines(kre.incerease5[,2]~ kon.normal[,1], col = 'green')
 lines(kre.decrease2[,2]~ kon.normal[,1], col = 'blue')
 lines(kre.decrease5[,2]~ kon.normal[,1], col = "orange")
 
+# Plot scenarios for R concentration
 plot(kre.normal[,3] ~ kon.normal[,1], type = 'l',ylim = c(0, 300),
      xlab = "time", ylab = "free receptor", main = "R when k.er is changed")
 lines(kre.increase2[,3]~ kon.normal[,1], col = 'red')
@@ -413,6 +431,7 @@ lines(kre.incerease5[,3]~ kon.normal[,1], col = 'green')
 lines(kre.decrease2[,3]~ kon.normal[,1], col = 'blue')
 lines(kre.decrease5[,3]~ kon.normal[,1], col = "orange")
 
+# Add legend
 legend(x = -22, y = 650, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.9)
 ```
@@ -436,6 +455,7 @@ When the k.er rate is increases, the R concentration increases because more rece
 ### Sythesis of receptor is blocked completely
 The ks_r parameter needs to be put to zero, because this is the rate of the receptor synthesis. 
 ```{r}
+# Parameter values
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -447,32 +467,41 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
+# Initial values
 state <- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Timeframe for 2 days
 t.steady <- seq(0, 48)
 
+# Simulate scenario
 out.normal <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
 parameters['k.sR'] <- 0
 out.ksr <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
 
+# Multiple plots in one figure
 par(mfrow = c(2,2))
 
+# Plot mRNAr concentration
 plot(out.normal[,2] ~ out.normal[,1], las = 1, type = "l", ylab = "mRNAr concentration", xlab = "time", main = "mRNAr")
 lines(out.ksr[,2] ~ out.ksr[,1], col= "red")
 
+# Plot R concentration
 plot(out.normal[,3] ~ out.normal[,1], las = 1, type = "l", ylab = "R concentration", xlab = "time", main = "R",
      ylim = c(0, 275))
 lines(out.ksr[,3] ~ out.ksr[,1], col = "red")
 
+# Plot DR
 plot(out.normal[,4] ~ out.normal[,1], las = 1, type = "l", ylab = "DR concentration", xlab = "time", main = "DR")
 lines(out.ksr[,4] ~ out.ksr[,1], col = "red")
 
+# Plot DR(N)
 plot(out.normal[,5] ~ out.normal[,1], las = 1,type = "l", ylab = "DR(N) concentration", xlab = "time", main = "DR(N)")
 lines(out.ksr[,5] ~ out.ksr[,1], col = "red")
 
+# Add legend
 legend(x = -22, y = 90, legend = c("normal", "ks_r to zero"), 
        fill = c("black", "red"), xpd = NA, cex = 0.9)
 ```
@@ -501,20 +530,7 @@ Simulations are run for 4 different scenarios:
 * ks_Rm = 2.9\*5 and kd_Rm=2.9\*5/4.74
 
 ```{r}
-corticosteroid <- function(t, state, paramters) {
-  with(as.list(c(state, paramters)),{
-    dmRNAr <- ks.Rm * (1 - DR.N / (IC50.Rm + DR.N)) - k.dRm * mRNAr
-    
-    dR <- k.sR * mRNAr + Rf * k.re * DR.N - k.on * D * R - k.dR * R
-    
-    dDR <- k.on * D * R - k.T * DR
-    
-    dDR.N <- k.T * DR - k.re * DR.N
-    
-    list(c(dmRNAr, dR, dDR, dDR.N))
-  }) 
-}
-
+# Parameter values
 parameters <- c(ks.Rm = 2.90,
                 IC50.Rm = 26.2,
                 k.on = 0.00329,
@@ -526,13 +542,16 @@ parameters <- c(ks.Rm = 2.90,
                 k.sR = 3.22,
                 D = 20 * 1000 * 1/374.471 )
 
+# Initial values
 state <- c(mRNAr = 4.74,
            R = 267,
            DR = 0,
            DR.N = 0)
 
+# Timeframe for 2 days
 t.steady <- seq(0, 48)
 
+# Simulate different scenarios
 ksrm.normal <- ode(y = state, times = t.steady, func = corticosteroid, parms = parameters)
 parameters['ks.Rm'] <- 2.90 * 2
 parameters['k.dRm'] <- 2.90 * 2 / 4.74
@@ -549,33 +568,38 @@ ksrm.decrease5 <- ode(y = state, times = t.steady, func = corticosteroid, parms 
 ```
 
 ```{r}
+# Multiple plots in one figure
 par(mfrow = c(2, 2))
-# plot(ksrm.normal[,2] ~ ksrm.normal[,1], type = 'l', ylim = c(0, 5),
-#      xlab = "time", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed")
+
+# Plot mRNAr concentration for scenarios
 plot(ksrm.increase2[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-1, 2),
      xlab = "time (h)", ylab = "mRNAr concentration", main = "mRNAr when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
 lines(ksrm.incerease5[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'green')
 lines(ksrm.decrease2[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = 'blue')
 lines(ksrm.decrease5[,2] - ksrm.normal[,2] ~ ksrm.normal[,1], col = "orange")
 
+# Plot R concentration dor scenarios
 plot(ksrm.increase2[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-8, 18),
      xlab = "time (h)", ylab = "R concentration", main = "R when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
 lines(ksrm.incerease5[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'green')
 lines(ksrm.decrease2[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = 'blue')
 lines(ksrm.decrease5[,3] - ksrm.normal[,3] ~ ksrm.normal[,1], col = "orange")
 
+# Plot DR for scenarios
 plot(ksrm.increase2[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-2, 5),
      xlab = "time (h)", ylab = "DR concentration", main = "DR when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
 lines(ksrm.incerease5[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'green')
 lines(ksrm.decrease2[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = 'blue')
 lines(ksrm.decrease5[,4] - ksrm.normal[,4] ~ ksrm.normal[,1], col = "orange")
 
+# Plot DR(N) for scenarios
 plot(ksrm.increase2[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'red', type = 'l', ylim = c(-2, 5),
      xlab = "time (h)", ylab = "DR(N) concentration", main = "DR(N) when ks.Rm is changed, \n with respect to the normal circumstances", cex.main = 0.8)
 lines(ksrm.incerease5[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'green')
 lines(ksrm.decrease2[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = 'blue')
 lines(ksrm.decrease5[,5] - ksrm.normal[,5] ~ ksrm.normal[,1], col = "orange")
 
+# Add legend
 legend(x =-22, y = 15, legend = c("normal", "increase2", "incease5", "decrease2", "decrease5"), 
        fill = c("black", "red", "green", "blue", "orange"), xpd = NA, cex = 0.8)
 ```
