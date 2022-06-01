@@ -1,0 +1,111 @@
+---
+title: "Glucocorticoid receptor dynamica"
+output:
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r warning=FALSE}
+# Load deSolve package
+library(deSolve)
+
+# Function with the models differential equations
+wildlife_urbanization_model <- function(t, state, paramters) {
+  with(as.list(c(state, paramters)),{
+    
+    dSp <- (b0 - (b1 * (Sp + Ip)) / 1-f) * (Sp + Ip) - m * Sp -  # demography
+      beta_p * Sp * Ip + gamma * Ip -  # infection
+      sigma * f * Sp + sigma * (1 - c_sigma) * (1 - f) * St  # movement
+    
+    
+    dIp <-  beta_p * Sp * Ip - gamma * Ip -  # infection
+      (m + mu) * Ip -  # demography
+      sigma * f * Ip + sigma * f * Ip + sigma * (1 - c_sigma) * (1 - f) * It  # movement
+    
+    
+    dSt <- (b0 - (b1 * (St + It) / f)) * (St + It) - (m / (1 - c_m)) * St -  # demography
+      beta_t * St * It + gamma * It +  # infection
+      sigma * f * Sp - sigma * (1 - c_sigma) * (1 - f) * St  # movement
+    
+    
+    dIt <- beta_t * St * It - gamma * It -  # infection
+      ((m + mu) / (1 - alpha * c_m)) * It +  # demography
+      sigma * f * Ip - sigma * (1 - c_sigma) * (1 - f) * It  # movement
+      
+    
+      
+    list(c(dSp, dIp, dSt, dIt))
+  }) 
+}
+
+population <- 50000
+infected <- 100
+counter <- 0
+f <- 0.8
+
+parameters <- c(# demography
+                  m = 0.1,
+                  b0 = 0.4,
+                  b1 = (b0 - m) / population,
+                  c_m = 0.2,
+            
+                  # infection
+                  beta_p = 0.006,
+                  beta_t = 0.006,
+                  gamma = 36.5,
+                  mu = 0.25,
+                  alpha = 2,
+                  
+                  # movement
+                  f = f,  # the f is changed during the modelling from 0.01 - 0.99
+                  sigma = -log(0.1),
+                  c_sigma = 0.2)
+  # Initial values
+state<- c(Sp = (population - infected) * (1 - f),
+          Ip = infected * (1 - f),
+          St = (population - infected) * f,
+          It=  infected * f)
+
+# Time frame of 2 days
+times <- seq(0, 50, 0.05)
+
+out <- ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters)
+plot(out)
+# for (f in seq(0.1, 0.99, 0.01)){
+#   counter <- counter + 1
+#   # Parameters
+#   parameters <- c(# demography
+#                   m = 0.1,
+#                   b0 = 0.4,
+#                   b1 = (b0 - m) / population,
+#                   c_m = 0.2,
+#             
+#                   # infection
+#                   beta_p = 0.006,
+#                   beta_t = 0.006,
+#                   gamma = 36.5,
+#                   mu = 0.25,
+#                   alpha = 2,
+#                   
+#                   # movement
+#                   f = f,  # the f is changed during the modelling from 0.01 - 0.99
+#                   sigma = -log(0.1),
+#                   c_sigma = 0.2)
+#   # Initial values
+#   state<- c(dSp = (population - infection) * (1 - f),
+#             dIp = infection * (1 - f),
+#             dSt = (population - infection) * f,
+#             dIt=  infection * f)
+# 
+# # Time frame of 2 days
+#   times <- seq(0, 50, 0.05)
+#   
+#   out <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
+#   
+# } 
+```
