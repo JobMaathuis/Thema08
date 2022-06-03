@@ -1,5 +1,5 @@
 ---
-title: "Glucocorticoid receptor dynamica"
+title: ""
 output:
   html_document:
     toc: true
@@ -45,67 +45,42 @@ wildlife_urbanization_model <- function(t, state, paramters) {
 
 population <- 50000
 infected <- 100
-counter <- 0
-f <- 0.8
+df <- data.frame()
 
-parameters <- c(# demography
-                  m = 0.1,
-                  b0 = 0.4,
-                  b1 = (b0 - m) / population,
-                  c_m = 0.2,
-            
-                  # infection
-                  beta_p = 0.006,
-                  beta_t = 0.006,
-                  gamma = 36.5,
-                  mu = 0.25,
-                  alpha = 2,
-                  
-                  # movement
-                  f = f,  # the f is changed during the modelling from 0.01 - 0.99
-                  sigma = -log(0.1),
-                  c_sigma = 0.2)
+for (f in seq(0.01, 0.99, 0.01)){
+  # demography
+  m <- 0.1
+  b0 <- 0.4
+  b1 <- (b0 - m) / population
+  c_m <- 0.2
+  
+  # infection
+  beta_p <- 0.006
+  beta_t <- 0.006
+  gamma <- 36.5
+  mu <- 0.25
+  alpha <- 2
+  
+  # movement
+  sigma <- -log(0.1)
+  c_sigma <- 0.2
+  
+  parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
+  
   # Initial values
-state<- c(Sp = (population - infected) * (1 - f),
-          Ip = infected * (1 - f),
-          St = (population - infected) * f,
-          It=  infected * f)
+  state<- c(Sp = (population - infected) * (1 - f),
+            Ip = infected * (1 - f),
+            St = (population - infected) * f,
+            It=  infected * f)
+  
+  # Time frame of 50 years
+  times <- seq(0, 50, 0.05)
+  
+  out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
+  df <- rbind(df, c(f, out[2:5], sum(out[2:5])))
+}
 
-# Time frame of 2 days
-times <- seq(0, 50, 0.05)
-
-out <- ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters)
-plot(out)
-# for (f in seq(0.1, 0.99, 0.01)){
-#   counter <- counter + 1
-#   # Parameters
-#   parameters <- c(# demography
-#                   m = 0.1,
-#                   b0 = 0.4,
-#                   b1 = (b0 - m) / population,
-#                   c_m = 0.2,
-#             
-#                   # infection
-#                   beta_p = 0.006,
-#                   beta_t = 0.006,
-#                   gamma = 36.5,
-#                   mu = 0.25,
-#                   alpha = 2,
-#                   
-#                   # movement
-#                   f = f,  # the f is changed during the modelling from 0.01 - 0.99
-#                   sigma = -log(0.1),
-#                   c_sigma = 0.2)
-#   # Initial values
-#   state<- c(dSp = (population - infection) * (1 - f),
-#             dIp = infection * (1 - f),
-#             dSt = (population - infection) * f,
-#             dIt=  infection * f)
-# 
-# # Time frame of 2 days
-#   times <- seq(0, 50, 0.05)
-#   
-#   out <- ode(y = state, times = times, func = corticosteroid, parms = parameters)
-#   
-# } 
+colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N')
+plot(df$N ~ df$f, type = 'l')
+# plot(out)
 ```
