@@ -15,13 +15,12 @@ knitr::opts_chunk$set(echo = TRUE)
 library(deSolve)
 
 # Function with the models differential equations
-wildlife_urbanization_model <- function(t, state, paramters) {
-  with(as.list(c(state, paramters)),{
+wildlife_urbanization_model <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)),{
     
     dSp <- (b0 - (b1 * (Sp + Ip)) /(1-f) ) * (Sp + Ip) - m * Sp -  # demography
       beta_p * Sp * Ip + gamma * Ip -  # infection
       sigma * f * Sp + sigma * (1 - c_sigma) * (1 - f) * St  # movement
-    
     
     
     dIp <-  beta_p * Sp * Ip - gamma * Ip -  # infection
@@ -38,7 +37,6 @@ wildlife_urbanization_model <- function(t, state, paramters) {
       ((m + mu) / (1 - alpha * c_m)) * It +  # demography
       sigma * f * Ip - sigma * (1 - c_sigma) * (1 - f) * It  # movement
       
-    
       
     list(c(dSp, dIp, dSt, dIt))
   }) 
@@ -49,44 +47,61 @@ wildlife_urbanization_model <- function(t, state, paramters) {
 ```{r}
 population <- 50000
 infected <- 100
-df <- data.frame(matrix(nrow = 0, ncol = 6))
-colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N')
 
 
-for (f in seq(0.01, 0.99, 0.01)){
-  # demography
-  m <- 0.1
-  b0 <- 0.4
-  b1 <- (b0 - m) / population
-  c_m <- 0.2
+for (beta_p in c(0.0015, 0.006, 0.0105)){
+  df <- data.frame(matrix(nrow = 0, ncol = 8))
+  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N*', 'p*', 'rho')
+  for (f in seq(0.01, 0.99, 0.01)){
+    # demography
+    m <- 0.1
+    b0 <- 0.4
+    b1 <- (b0 - m) / population
+    c_m <- 0.2
+    
+    # infection
+    beta_p <- beta_p
+    beta_t <- 0.006
+    gamma <- 36.5
+    mu <- 0.25
+    alpha <- 2
+    
+    # movement
+    sigma <- -log(0.1)
+    c_sigma <- 0.2
+    
+    parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
+    
+    # Initial values
+    state<- c(Sp = (population - infected) * (1 - f),
+              Ip = infected * (1 - f),
+              St = (population - infected) * f,
+              It=  infected * f)
+    
+    # Time frame of 50 years
+    times <- seq(0, 50, 0.05)
+    
+    out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
+    df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]), (out[3] + out[5])/sum(out[2:5]), out[5]/f)
+  }
+  if (beta_p == 0.0015){
+    # plot(df$'N*' ~ df$f, type = 'l', col = 'orange', lwd = 2)
+    # plot(df$'p*' ~ df$f, type = 'l', col = 'orange', lwd = 2, ylim =c(1, 0.1))
+    plot(df$rho ~ df$f, type = 'l', col = 'orange', lwd = 2)
+  }
+  if (beta_p == 0.006){
+    # lines(df$'N*' ~ df$f, col = 'blue', lwd = 2)
+    # lines(df$'p*' ~ df$f, col = 'blue', lwd = 2)
+    # lines(df$rho ~ df$f, col = 'blue', lwd = 2)
+  }
+  if (beta_p == 0.0105){
+  # lines(df$'N*' ~ df$f, col = 'purple', lwd = 2)
+    # lines(df$'p*' ~ df$f, col = 'purple', lwd = 2)
+    # plot(df$rho ~ df$f, col = 'purple', lwd = 2)
+  }
   
-  # infection
-  beta_p <- 0.006
-  beta_t <- 0.006
-  gamma <- 36.5
-  mu <- 0.25
-  alpha <- 2
-  
-  # movement
-  sigma <- -log(0.1)
-  c_sigma <- 0.2
-  
-  parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
-  
-  # Initial values
-  state<- c(Sp = (population - infected) * (1 - f),
-            Ip = infected * (1 - f),
-            St = (population - infected) * f,
-            It=  infected * f)
-  
-  # Time frame of 50 years
-  times <- seq(0, 50, 0.05)
-  
-  out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
-  df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]))
 }
 
-plot(df$N ~ df$f, type = 'l')
 ```
 
 
@@ -112,27 +127,27 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, c_m
   colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N')
   
   for (f in seq(0.01, 0.99, 0.01)){
-    # demography
-    m <- m
-    b0 <- b0
+    #### Dit hoeft vgm niet, want je hebt ze al een naam gegeven bij de function parameters
+    # m <- m
+    # b0 <- b0
     b1 <- (b0 - m) / population
-    c_m <- c_m
-    
-    # infection
-    beta_p <- beta_p
-    beta_t <- beta_t
-    gamma <- gamma
-    mu <- mu
-    alpha <- alpha
-    
-    # movement
-    f <- f
-    sigma <- sigma
-    c_sigma <- c_sigma
+    # c_m <- c_m
+    # 
+    # # infection
+    # beta_p <- beta_p
+    # beta_t <- beta_t
+    # gamma <- gamma
+    # mu <- mu
+    # alpha <- alpha
+    # 
+    # # movement
+    # f <- f
+    # sigma <- sigma
+    # c_sigma <- c_sigma
     
     # Creating a vector with the parameter values
     parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
-  
+    print(parameters)
     # Creating a vector with the initial values
     state<- c(Sp = (population - infected) * (1 - f),
               Ip = infected * (1 - f),
@@ -141,12 +156,12 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, c_m
     
     # Time frame of 50 years
     times <- seq(0, 50, 0.05)
-    
+    print(f)
+    print(paste0('parameters', parameters))
     out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
-    
+    print(paste0('out', out))
     df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]))
-    }
-  
+  }
   return(df)
 }
 
