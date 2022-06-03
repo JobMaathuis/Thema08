@@ -18,9 +18,10 @@ library(deSolve)
 wildlife_urbanization_model <- function(t, state, paramters) {
   with(as.list(c(state, paramters)),{
     
-    dSp <- (b0 - (b1 * (Sp + Ip)) / 1-f) * (Sp + Ip) - m * Sp -  # demography
+    dSp <- (b0 - (b1 * (Sp + Ip)) / (1-f)) * (Sp + Ip) - m * Sp -  # demography
       beta_p * Sp * Ip + gamma * Ip -  # infection
       sigma * f * Sp + sigma * (1 - c_sigma) * (1 - f) * St  # movement
+    
     
     
     dIp <-  beta_p * Sp * Ip - gamma * Ip -  # infection
