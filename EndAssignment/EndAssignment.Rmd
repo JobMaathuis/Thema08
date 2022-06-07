@@ -44,6 +44,48 @@ wildlife_urbanization_model <- function(t, state, parameters) {
 
 ```
 
+
+```{r}
+run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, 
+                      c_m = 0.2, beta_p = 0.006, beta_t = 0.006, gamma = 36.5, 
+                      mu = 0.25, alpha = 2, sigma = -log(0.1), c_sigma = 0.2){
+  
+  # Create a data frame to store needed data
+  df <- data.frame(matrix(nrow = 0, ncol = 8))
+  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N', 'p', 'rho')
+  
+  for (f in seq(0.01, 0.99, 0.01)){
+    # Calculate b1 based on the function parameters
+    b1 <- (b0 - m) / population
+    
+    # Calculate infection status per habitat
+    Sp <- (population - infected) * (1 - f)
+    Ip <- infected * (1 - f)
+    St <- (population - infected) * f
+    It <- infected * f
+    
+    # Creating a vector with the parameter values
+    parameters <- c(m = m, b0 = b0, b1 = b1, c_m = c_m, beta_p = beta_p, 
+                    beta_t = beta_t, gamma = gamma, mu = mu, alpha = alpha, 
+                    f = f, sigma = sigma, c_sigma = c_sigma)
+  
+    # Creating a vector with the initial values
+    state<- c(Sp = Sp, Ip = Ip, St = St, It = It)
+    
+    # Time frame of 50 years
+    times <- seq(0, 50, 0.05)
+    
+    out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
+    
+    df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]), (out[3] + out[5])/sum(out[2:5]), out[5]/f)
+    }
+  
+  return(df)
+}
+```
+
+
+
 ```{r}
 population <- 50000
 infected <- 100
