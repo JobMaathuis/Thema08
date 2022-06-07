@@ -11,6 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r warning=FALSE}
+## ODE FUNCTION
+
+
 # Load deSolve package
 library(deSolve)
 
@@ -46,6 +49,8 @@ wildlife_urbanization_model <- function(t, state, parameters) {
 
 
 ```{r}
+## RUN MODEL FUNCTION
+
 run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, 
                       c_m = 0.2, beta_p = 0.006, beta_t = 0.006, gamma = 36.5, 
                       mu = 0.25, alpha = 2, sigma = -log(0.1), c_sigma = 0.2){
@@ -87,51 +92,18 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4,
 
 
 ```{r}
+## FOR LOOPJES OBTAINING DATA
 population <- 50000
 infected <- 100
 
 
 for (beta_t in c(0.0015, 0.006, 0.0105)){
-  df <- data.frame(matrix(nrow = 0, ncol = 8))
-  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N', 'p', 'rho')
-  for (f in seq(0.01, 0.99, 0.01)){
-    # demography
-    m <- 0.1
-    b0 <- 0.4
-    b1 <- (b0 - m) / population
-    c_m <- 0.2
-    
-    # infection
-    beta_p <- 0.006
-    beta_t <- beta_t
-    gamma <- 36.5
-    mu <- 0.25
-    alpha <- 2
-    
-    # movement
-    sigma <- -log(0.1)
-    c_sigma <- 0.2
-    
-    parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
-    
-    # Initial values
-    state<- c(Sp = (population - infected) * (1 - f),
-              Ip = infected * (1 - f),
-              St = (population - infected) * f,
-              It=  infected * f)
-    
-    # Time frame of 50 years
-    times <- seq(0, 50, 0.05)
-    
-    out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
-    df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]), (out[3] + out[5])/sum(out[2:5]), out[5]/f)
-  }
+  df <- run_model(beta_t = beta_t)
   if (beta_t == 0.0015){
     N_all <- data.frame('0.0015' = df$N)
     p_all <- data.frame('0.0015' = df$p)
-    rho_all <- data.frame('0.0015' = df$rho) 
+    rho_all <- data.frame('0.0015' = df$rho)
   }
-  results = list
   if (beta_t == 0.006){
     N_all <- data.frame(N_all, '0.006' = df$N)
     p_all <- data.frame(p_all, '0.006' = df$p)
@@ -142,11 +114,11 @@ for (beta_t in c(0.0015, 0.006, 0.0105)){
     p_all <- data.frame(p_all, '0.0105' = df$p)
     rho_all <- data.frame(rho_all, '0.0105' = df$rho)
   }
-  
 }
 ```
 
 ```{r}
+## FOR LOOPJES VOOR PLOTTEN
 
 datasets = list(N_all, p_all, rho_all)
 labels = c('population size', 'infection prevealance', 'spillover risk')
@@ -163,68 +135,4 @@ for (item in 1:length(datasets)){
     }
   }
 }
-```
-
-
-
-
-
-
-Ik heb hieronder toch maar even een functie gemaakt... Niet dat hij helemaal werkt nog... Ik ga er nog ff naar kijken!!
-
-
-```{r}
-run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, c_m = 0.2,
-                      beta_p = 0.006, beta_t = 0.006, gamma = 36.5, mu = 0.25, alpha = 2,
-                      sigma = -log(0.1), c_sigma = 0.2){
-  
-  population <- population
-  infected <- infected
-  
-  df <- data.frame(matrix(nrow = 0, ncol = 6))
-  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N')
-  
-  for (f in seq(0.01, 0.99, 0.01)){
-    #### Dit hoeft vgm niet, want je hebt ze al een naam gegeven bij de function parameters
-    # m <- m
-    # b0 <- b0
-    b1 <- (b0 - m) / population
-    # c_m <- c_m
-    # 
-    # # infection
-    # beta_p <- beta_p
-    # beta_t <- beta_t
-    # gamma <- gamma
-    # mu <- mu
-    # alpha <- alpha
-    # 
-    # # movement
-    # f <- f
-    # sigma <- sigma
-    # c_sigma <- c_sigma
-    
-    # Creating a vector with the parameter values
-    parameters <- c(m, b0, b1, c_m, beta_p, beta_t, gamma, mu, alpha, f, sigma, c_sigma)
-    print(parameters)
-    # Creating a vector with the initial values
-    state<- c(Sp = (population - infected) * (1 - f),
-              Ip = infected * (1 - f),
-              St = (population - infected) * f,
-              It =  infected * f)
-    
-    # Time frame of 50 years
-    times <- seq(0, 50, 0.05)
-    print(f)
-    print(paste0('parameters', parameters))
-    out <- tail(ode(y = state, times = times, func = wildlife_urbanization_model, parms = parameters), 1)
-    print(paste0('out', out))
-    df[nrow(df) + 1,] <- c(f, out[2:5], sum(out[2:5]))
-  }
-  return(df)
-}
-
-```
-
-```{r}
-run_model()
 ```
