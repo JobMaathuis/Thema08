@@ -93,12 +93,8 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4,
 
 ```{r}
 ## FOR LOOPJES OBTAINING DATA
-population <- 50000
-infected <- 100
-
-
 for (beta_t in c(0.0015, 0.006, 0.0105)){
-  df <- run_model(beta_t = beta_t)
+  df <- run_model(beta_t = beta_t, c_sigma = 0.8)
   if (beta_t == 0.0015){
     N_all <- data.frame('0.0015' = df$N)
     p_all <- data.frame('0.0015' = df$p)
@@ -120,12 +116,12 @@ for (beta_t in c(0.0015, 0.006, 0.0105)){
 ```{r}
 ## FOR LOOPJES VOOR PLOTTEN
 
-datasets = list(N_all, p_all, rho_all)
-labels = c('population size', 'infection prevealance', 'spillover risk')
-cols = c('orange', 'blue', 'purple')
-
+datasets <- list(N_all, p_all, rho_all)
+labels <- c('population size', 'infection prevealance', 'spillover risk')
+cols <- c('orange', 'blue', 'purple')
+par(mfrow=c(1,3))
 for (item in 1:length(datasets)){
-  data = datasets[[item]]
+  data <- datasets[[item]]
   for (scenario in 1:3){
     if (scenario == 1){
       plot(data[,scenario] ~ df$f, col = cols[scenario], type = 'l', lwd = 3, ylim = c(0, max(data) * 1.25), xlab = 'f', ylab = labels[item])
