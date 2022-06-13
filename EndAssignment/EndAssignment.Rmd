@@ -3,6 +3,7 @@ title: ''
 output:
   pdf_document:
     toc: yes
+    citation_package: biblatex
   html_document:
     toc: yes
     fig_caption: yes
@@ -11,8 +12,12 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+\newpage
+## Introduction
+Heavy metal pollution due to urbanization has a serious impact on humans and animals. In addition the exposure to those toxicants can influence negative effects of virus infections on individual hosts, but also altering animal movement. To understand this, a hypothetical flying fox species is infected with a virus and a mathematical model explores the infection dynamics in toxicant-contaminated landscapes.  
+Flying foxes are often used as bioindicators for heavy metal pollution, because they have a broad range of different habitats. They feed on fruiting plants in human environments, where they face exposure to heavy metals. Another reason why flying fox species are used in this model is because they are reservoir hosts of a virus named henipavirus. This virus can be transmitted to humans and other animals.
 
-
+\newpage
 ## Methods
 In this section the methods will be discussed. This is divided into two parts: the software and the model. The software part lists the programming language and packages that have been used, with the corresponding versions. The model section lists the differential equations. This is followed by the values and definitions of each parameter of each value is then discussed. 
 
@@ -44,12 +49,12 @@ In the second scenario, the population size is being varied. This is done to see
 
 * $\text{population size} = ...$
 
-
+\newpage
 ## Results
 
 As mentioned earlier, two scenarios have been modulated. This section is divided according to these scenarios.
 
-```{r warning=FALSE}
+```{r ODEfunction, echo=FALSE, warning=FALSE}
 ## ODE FUNCTION
 
 # Load deSolve package
@@ -85,7 +90,7 @@ wildlife_urbanization_model <- function(t, state, parameters) {
 
 ```
 
-```{r}
+```{r modelfunction, echo=FALSE}
 ## MODEL FUNCTION
 
 run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4, 
@@ -126,7 +131,7 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4,
 }
 ```
 
-```{r}
+```{r plotfunction, echo=FALSE}
 ## PLOT FUNCTION
 plot_scenario <- function(datasets, y_labels, line_cols, legends){
   plot_labels = c("A", "B", "C")
@@ -136,7 +141,8 @@ plot_scenario <- function(datasets, y_labels, line_cols, legends){
       if (scenario == 1){
         plot(data[,scenario] ~ df$f, col = line_cols[scenario], 
              type = 'l', lwd = 3, ylim = c(0, max(data) * 1.25),
-             xlab = 'f', ylab = y_labels[item], las = 1)
+             xlab = 'f', las = 1, ylab = "")
+        title(ylab = y_labels[item], line = 3.3)
         text(x=0.05, y=max(data) * 1.2, labels = plot_labels[item], font = 2)
       }
       else{
@@ -148,8 +154,7 @@ plot_scenario <- function(datasets, y_labels, line_cols, legends){
 ```
 
 ### Scenario 1: beta_t
-
-```{r}
+```{r loopfunction, echo=FALSE}
 ## FOR LOOPJES OBTAINING DATA
 
 for (beta_t in c(0.0015, 0.006, 0.0105)){
@@ -172,16 +177,16 @@ for (beta_t in c(0.0015, 0.006, 0.0105)){
 }
 ```
 
-```{r, fig.cap = 'beta_t scenarios', fig.width=7}
+```{r beta_t_scenarios,echo=FALSE, fig.cap='beta_t scenarios', fig.width=7}
 beta_t_data <- list(N_all, p_all, rho_all)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'blue', 'purple')
 beta_t_legends <- c(expression(paste(beta[T], " < ", beta[P])),expression(paste(beta[T], " = ", beta[P])),
                     expression(paste(beta[T], " > ", beta[P])))
-par(mfrow=c(2,2))
+par(mfrow=c(2,2), mar=c(3.1,5.1,3.1,2.1))
 plot_scenario(datasets = beta_t_data, y_labels = beta_t_labels, line_cols = beta_t_cols, 
               legends = beta_t_legends)
-legend(1.05, 28000, legend = beta_t_legends, fill = beta_t_cols, xpd=NA)
+legend(1.1, 26000, legend = beta_t_legends, fill = beta_t_cols, xpd=NA)
 ```
 In figure # the population size, infection prevalence and spillover risk are shown with varying $\beta_t$ values. 
 
@@ -230,48 +235,7 @@ Altogether it seems like a similar trend in all graphs can be seen. $\beta_t = \
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+___________________________________________________
 
 
 
@@ -320,4 +284,28 @@ Altogether it seems like a similar trend in all graphs can be seen. $\beta_t = \
 #   df_mu[nrow(df_mu) + 1,] <- run_model_sensitivity(c_m = mu)
 # }
 # plot(df_mu$X2 ~ df_mu$X1, type = 'l', ylim = c(0, 1))
+```
+
+
+\newpage
+## Discussion
+
+\newpage
+## References
+
+\newpage
+## Apendix
+```{r ODEfunction, eval=FALSE}
+```
+
+```{r modelfunction, eval=FALSE}
+```
+
+```{r plotfunction, eval=FALSE}
+```
+
+```{r loopfunction, eval=FALSE}
+```
+
+```{r beta_t_scenarios, eval=FALSE}
 ```
