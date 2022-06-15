@@ -18,12 +18,12 @@ Flying foxes are often used as bioindicators for heavy metal pollution, because 
 
 \newpage
 ## Methods
-In this section the methods will be discussed. This is divided into two parts: the software and the model. The software part lists the programming language and packages that have been used, with the corresponding versions. The model section lists the differential equations. This is followed by the values and definitions of each parameter of each value is then discussed. 
+This section is divided into two parts: the software and the model. The software part lists the programming language and packages that have been used, with their corresponding versions. The model part lists the differential equations. This is followed by the definitions and values of each parameter of each value is then discussed. 
 
 The code used in this project is written used R version 4.1.3. In R the DeSolve package (version 1.32) is imported in order to model the differential equations, which are shown below. 
 
 The model is set-up using the following differential equations:
-```{r, echo=FALSE, fig.cap="\\textit{differential equations used by the model. Each differential equation is highlighted by different color; green represents demography paramters, orange represents infection paramters and purple represents movement paramters. Each equation calculates the population size of a different group. The groups are: susceptible animals in a pristine habitat ($S_P$), infected animals in a pristine habitat ($I_P$,) susceptible animals in a toxic contaminated habit ($S_T$) and infected aminals in a toxid contamindated area ($I_T$)}. Image obtained from SOURCE", out.width = '70%'}
+```{r, echo=FALSE, fig.cap="\\textit{differential equations used by the model. Each differential equation is highlighted by different color; green represents demography paramters, orange represents infection paramters and purple represents movement paramters. Each equation calculates the population size of a different group. The groups are: susceptible animals in a pristine habitat ($S_P$), infected animals in a pristine habitat ($I_P$,) susceptible animals in a toxic contaminated habit ($S_T$) and infected aminals in a toxid contamindated area ($I_T$). Image obtained from SOURCE}", out.width = '70%'}
 knitr::include_graphics("./images/ODE.png")
 ```
 In figure 1 four differential equations are shown. Firstly, $\frac {dS_P}{dt}$ calculates the population size of the susceptible (S) flying foxes which are located in a pristine (P) area. Secondly, $\frac {dI_P}{dt}$ calculates the mount of infected (I) flying foxes in a pristine (P) area. Thirdly, $\frac {dS_T}{dt}$ calculates the amount of flying foxes which are susceptible (S) and in a toxic (T) area. Lastly, $\frac {dI_T}{dt}$ calculates the population size of the flying foxes which are infected (I) and located in a toxic area (T)
@@ -101,7 +101,8 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4,
   
   # Create a data frame to store needed data
   df <- data.frame(matrix(nrow = 0, ncol = 8))
-  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 'N', 'p', 'rho')
+  colnames(df) <- c('f', 'Sp', 'Ip', 'St', 'It', 
+                    'pop_size', 'inf_prevalence', 'spillover')
   
   for (f in seq(0.01, 0.99, 0.01)){
     # Calculate b1 based on the function parameters
@@ -133,6 +134,31 @@ run_model <- function(population = 50000, infected = 100, m = 0.1, b0 = 0.4,
 }
 ```
 
+```{r obtain_data_function, echo=FALSE}
+## OBTAIN DATA FUNCTION
+obtain_data <- function(c_sigma){
+  for (beta_t in c(0.0015, 0.006, 0.0105)){
+    df <- run_model(beta_t = beta_t, c_sigma = c_sigma)
+    if (beta_t == 0.0015){
+      population_all <- data.frame('0.0015' = df$pop_size)
+      infection_all <- data.frame('0.0015' = df$inf_prevalence)
+      spillover_all <- data.frame('0.0015' = df$spillover)
+    }
+    if (beta_t == 0.006){
+      population_all <- data.frame(population_all, '0.006' = df$pop_size)
+      infection_all <- data.frame(infection_all, '0.006' = df$inf_prevalence)
+      spillover_all <- data.frame(spillover_all, '0.006' = df$spillover)
+    }
+    if (beta_t == 0.0105){
+      population_all <- data.frame(population_all, '0.0105' = df$pop_size)
+      infection_all <- data.frame(infection_all, '0.0105' = df$inf_prevalence)
+      spillover_all <- data.frame(spillover_all, '0.0105' = df$spillover)
+    }
+  }
+  return(list(population_all, infection_all, spillover_all))
+}
+```
+
 ```{r plotfunction, echo=FALSE}
 ## PLOT FUNCTION
 plot_scenario <- function(datasets, y_labels, line_cols, legends){
@@ -156,33 +182,8 @@ plot_scenario <- function(datasets, y_labels, line_cols, legends){
 }
 ```
 
-```{r loopfunction2, echo=FALSE}
-## FOR LOOPJES OBTAINING DATA
-obtain_data <- function(c_sigma){
-  for (beta_t in c(0.0015, 0.006, 0.0105)){
-    df <- run_model(beta_t = beta_t, c_sigma = c_sigma)
-    if (beta_t == 0.0015){
-      population_all <- data.frame('0.0015' = df$N)
-      infection_all <- data.frame('0.0015' = df$p)
-      spillover_all <- data.frame('0.0015' = df$rho)
-    }
-    if (beta_t == 0.006){
-      population_all <- data.frame(population_all, '0.006' = df$N)
-      infection_all <- data.frame(infection_all, '0.006' = df$p)
-      spillover_all <- data.frame(spillover_all, '0.006' = df$rho)
-    }
-    if (beta_t == 0.0105){
-      population_all <- data.frame(population_all, '0.0105' = df$N)
-      infection_all <- data.frame(infection_all, '0.0105' = df$p)
-      spillover_all <- data.frame(spillover_all, '0.0105' = df$rho)
-    }
-  }
-  return(list(population_all, infection_all, spillover_all))
-}
-```
-
 ### Scenario 1: \boldmath$\beta_t$
-```{r beta_t_scenarios, echo=FALSE, fig.cap='\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate beta_T < beta_P, beta_T = beta_P and beta_T < beta_P, respectively. A c_sigma value of 0.2 was used}', fig.width=7}
+```{r beta_t_scenarios, echo=FALSE, fig.cap="modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate beta_T < beta_P, beta_T = beta_P and beta_T < beta_P, respectively. A c_sigma value of 0.2 was used ", fig.width=7}
 beta_t_data <- obtain_data(c_sigma = 0.2)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'slateblue', 'deepskyblue2')
@@ -207,7 +208,8 @@ Altogether it seems like a similar trend in all graphs of figure 3 can be seen. 
 
 ### Scenario 2: population size
 
-```{r c_sigma_scenarios ,echo=FALSE, fig.cap='\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate beta_T < beta_P, beta_T = beta_P and beta_T < beta_P, respectively. A c_sigma value of 0.8 was used}', fig.width=7}
+
+```{r c_sigma_scenarios ,echo=FALSE, fig.cap="\\textit{ modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate beta_T < beta_P, beta_T = beta_P and beta_T < beta_P, respectively. A c_sigma value of 0.8 was used } ", fig.width=7}
 beta_t_data <- obtain_data(c_sigma = 0.8)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'slateblue', 'deepskyblue2')
