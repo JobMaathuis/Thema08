@@ -225,17 +225,24 @@ legend(1.1, 26000, legend = beta_t_legends, fill = beta_t_cols, xpd=NA)
 
 In figure 4 the population size, infection prevalence and spillover risk are shown with varying $\beta_T$ values. These graphs will be mostly compared to the graphs in figure 3.
 
-Figure 4A and figure 3A show some similarities. Firstly, the lines of \textcolor{violet}{\boldmath$\beta_t = \beta_p$} and \textcolor{cyan}{\boldmath$\beta_t > \beta_p$} are in both graphs very close together and show a similar trend. \textcolor{orange}{\boldmath$\beta_t < \beta_p$} is in both cases distant from the other two lines and shows a similar yet more extreme trend. However, \textcolor{orange}{\boldmath$\beta_t < \beta_p$} in figure 4A shows more of a kink at the inflection point, compared to a curve in figure 3A. This inflection point is also at a lower $f$, that is, it is a shifted to the right. \textcolor{orange}{\boldmath$\beta_t < \beta_p$} also hs a lower maximum at this point of inflection.
+Figure 4A and figure 3A the lines of \textcolor{violet}{\boldmath$\beta_t = \beta_p$} and \textcolor{cyan}{\boldmath$\beta_t > \beta_p$} are in both graphs very close together and show a similar trend. These liens show in figure 3A a small initial increase, which can not be seen in figure 4A. \textcolor{orange}{\boldmath$\beta_t < \beta_p$} does have an initial increase in figure 4A and shows more of a kink at the inflection point, compared to a curve in figure 3A. This inflection point is also at a lower $f$, that is, it is a shifted to the right. \textcolor{orange}{\boldmath$\beta_t < \beta_p$} also has a lower maximum at this point of inflection.
 
 The graph illustrated in figure 4B and figure 3B show a similar pattern in a way that  \textcolor{violet}{\boldmath$\beta_t = \beta_p$}, \textcolor{cyan}{\boldmath$\beta_t > \beta_p$} and \textcolor{orange}{\boldmath$\beta_t < \beta_p$} and first decline and then increase. In addition, the values of where the lines start and end are the same in figure 4B and 3B. However, the point of inflection happens at a lower $f$ and the minimum of the line is lower. This results in a more stiff decrease and increase.
 
-When looking at figure 4C compared to figure 3C, the following can be noticed. The lines in figure 4C are similar but more compressed and shifted to the left. In addition, the spillover risk values of the peaks are higher. This results in a more steep increase. Interestingly, when looking at \textcolor{orange}{\boldmath$\beta_t < \beta_p$} in figure 4C a flatline can be seen until an $f$ of 0.4 is reached. 
+When looking at figure 4C compared to figure 3C, the following can be noticed. The lines in figure 4C are similar but more compressed and shifted to the left. In addition, the spillover risk values of the peaks are higher. This results in a more steep increase. Interestingly, when looking at \textcolor{orange}{\boldmath$\beta_t < \beta_p$} in figure 4C a flat-line can be seen until an $f$ of 0.4 is reached. 
 
 Collectively, all graphs in figure 4 are unlike in way that the lines are shifted to the right when compared to figure 3. On the contrary, similar values of the start and stop values can be seen in all graphs (A, B and C) and lines. 
 
 
 \newpage
 ## Discussion
+Scenario 1
+In the results its stated that as the fraction of toxic-contaminated habitat increases, the population size always first increases and then decreases, independent of the value of $\beta_t$. This increase may be due to ... . 
+
+Scenario 2
+When the cost of toxicants to dispersal ($c_\sigma$) is increased, it is harder for an animal to move from a toxic-contaminated habitat to a pristine habitat. This means that the chance of animal staying in the toxic-contaminated habitat is greater. This results in that the survival chance of an animal exposed to toxicants decreases, because it is difficult for the animal to move out of this harmful habitat. This effect can be seen in the results (figure 5AB), where the maximum population size is lower and this maximum is reached at a lower fraction of toxic-contaminated habitat. The positive effects of the toxicants on the host survival are worn off at a lower fraction of toxic-contaminated area when a higher cost of toxicants to dispersal is applied. When the transmission rate in a toxic-contaminated area is bigger or equal compared to the transmission rate in a pristine area (\textcolor{violet}{\boldmath$\beta_t = \beta_p$} and \textcolor{cyan}{\boldmath$\beta_t > \beta_p$}), the positive effects of toxicants on the host survival are neglected. Which results in the monotonically decrease of population size.
+
+
 
 \newpage
 ## References
