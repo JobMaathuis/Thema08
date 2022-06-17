@@ -1,4 +1,4 @@
-# The effect of toxicant exposure on infected Flying Foxes
+# The effect of toxicant exposure on infected flying foxes
 ## A mathematical model that explores infection dynamics in toxicant-contaminated landscapes
 Joukje Kloosterman & Job Maathuis  
 17-06-2022
