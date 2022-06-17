@@ -221,7 +221,7 @@ Altogether it seems like a similar trend in all graphs of figure 3 can be seen. 
 
 ## Comparing \boldmath$c_\sigma$ values
 
-```{r c_sigma_scenarios ,echo=FALSE, fig.cap="\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate $beta_T < beta_P$, $beta_T = beta_P$ and $beta_T < beta_P$, respectively. A $c_sigma$ value of 0.8 was used.} ", fig.width=7}
+```{r c_sigma_scenarios, echo=FALSE, fig.cap="\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate $beta_T < beta_P$, $beta_T = beta_P$ and $beta_T < beta_P$, respectively. A $c_sigma$ value of 0.8 was used.} ", fig.width=7}
 beta_t_data <- obtain_data(c_sigma = 0.8)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'slateblue', 'deepskyblue2')
@@ -253,11 +253,11 @@ With the model two different figures where created. The first one had a lower co
 
 When the virus is less transmissible in toxicant-contaminated habitat then in pristine habitat (\textcolor{orange}{\boldmath$\beta_T < \beta_P$), lower fractions of the toxicants might not have a large effect on  transferring the the virus from host to host, this might mean that less flying foxes are infected with the virus (a lower infection prevalence) and less flying foxes die from infection (higher population size). The infection prevalance decreases because there are less infected flying foxes in toxic-contaminated habitat and a larger population size.
 
-But when a virus is equally or more transmissible in toxicant-contaminated habitat, there is also a small increase in population size and a decrease in infection prevalence. However, in both situations the population size decreases sooner. This is because toxicants might amplify the negative effects of the virus, causing the virus to go from host to host sooner and therefor infect more flying foxes with the virus, When looking at the infection prevalence plot this might seem contradictory, since the infection prevalence is the ratio between infected animals in toxic-contaminated habitat and the population size, more infected animals might mean a lower population size, causing less infected animals in toxic-contaminated habitat and a lower population size, therefor a decline in infection prevalence. 
+But when a virus is equally (\textcolor{violet}{\boldmath$\beta_T = \beta_P$}) or more (\textcolor{cyan}{\boldmath$\beta_T > \beta_P$}) transmissible in toxicant-contaminated habitat, there is also a small increase in population size and a decrease in infection prevalence. However, in both situations the population size decreases sooner. This is because toxicants might amplify the negative effects of the virus, causing the virus to go from host to host sooner and therefor infect more flying foxes with the virus, When looking at the infection prevalence plot this might seem contradictory, since the infection prevalence is the ratio between infected animals in toxic-contaminated habitat and the population size, more infected animals might mean a lower population size, causing less infected animals in toxic-contaminated habitat and a lower population size, therefor a decline in infection prevalence. 
 
 It appears that in all three scenarios when there is a very high fraction of contaminated habitat, the population size (further) decrease. When looking at the equations there is a direct relation between $f$ and demography and movement. In the equations about the toxicant-contaminated habitat, a higher $f$ leads to less movement from the contaminated habitat to pristine habitat (- $\sigma$ * (1 - $c_\sigma$) * (1 - f)$I_T$). This means that toxicant-contaminated habitats contain more flying foxes than pristine habitats. Assumed that a higher toxicant-contaminated habitat is also more urbanized, leading to more food sources for flying foxes, the exposure of toxicants to the flying foxes are higher and can cause more fatal cases. This leads to a decline in population size. Then the ratio of population size and amount of infected flying foxes in the toxicant habitat increase. 
 
-It appears when a virus is equally or more transmissible in toxicant-contaminated habitat that the spill-over risk occur at lower proportions of toxicant-contaminated habitat. Meaning that less flying foxes are needed to spill over diseases to humans. However when the transmission rate is less, the virus is only being spilled over at a high $f$. This could be because a higher fraction of contaminated habitat could mean more urbanization and more human-wildlife contact, and therefor an increase in spill-over risk. 
+It seems that,when a virus is equally or more transmissible in toxicant-contaminated habitat that the spill-over risk occur at lower proportions of toxicant-contaminated habitat. Meaning that less flying foxes are needed to spill over diseases to humans. However when the transmission rate is less, the virus is only being spilled over at a high $f$. This could be because a higher fraction of contaminated habitat could mean more urbanization and more human-wildlife contact, and therefor an increase in spill-over risk. 
 
 When the cost of toxicants to dispersal ($c_\sigma$) is increased, it is harder for an animal to move from a toxic-contaminated habitat to a pristine habitat. This means that the chance of animal staying in the toxic-contaminated habitat is greater. This results in that the survival chance of an animal exposed to toxicants decreases, because it is difficult for the animal to move out of this harmful habitat. This effect can be seen in the results (figure 4AB), where the maximum population size is lower and this maximum is reached at a lower fraction of toxic-contaminated habitat. The rest of the explanations for the plots as described for $c_\sigma$ = 2 are similar to the the movement of the lines in figure 4. A higher cost of toxicant dispersal simply means that the overall population size an prevalence is reduced, and that infections could be transferred to humans at even lower fractions of toxicant-contaminated habitat.. 
 
@@ -265,40 +265,32 @@ When the cost of toxicants to dispersal ($c_\sigma$) is increased, it is harder 
 \newpage
 
 # References
-
 ::: {#refs}
 :::
 
 \newpage
 
 # Apendix
-
-### ODE Function
-
+## ODE Function
 ```{r ODEfunction, eval=FALSE}
 ```
-
-### Running the ODE function
-
+\newpage
+## Running the ODE function
 ```{r modelfunction, eval=FALSE}
 ```
-
-### Obtaining data function
-
+\newpage
+## Obtaining data function
 ```{r obtain_data_function, eval=FALSE}
 ```
 
-### Plotting scenarios function
-
+## Plotting scenarios function
 ```{r plotfunction, eval=FALSE}
 ```
-
-### Running $\beta_t$ scenarios
-
+\newpage
+## Running $\beta_t$ scenarios
 ```{r beta_t_scenarios, eval=FALSE}
 ```
 
-### Running $c_\sigma$ scenarios
-
+## Running $c_\sigma$ scenarios
 ```{r c_sigma_scenarios, eval=FALSE}
 ```
