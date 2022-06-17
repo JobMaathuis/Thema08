@@ -1,5 +1,6 @@
 ---
 title: "The effect of toxicant exposure on infected Flying Foxes"
+subtitle: "A mathematical model that explores infection dynamics in toxicant-contaminated landscapes"
 output:
   pdf_document:
     fig_caption: yes
@@ -17,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 \begin{flushright}
 Joukje Kloosterman (423335) \&\\
 Job Maathuis (426589)\\
-BFV 2\\
+BFV2\\
 j.kloosterman@st.hanze.nl \&\\
 j.maathuis@st.hanze.nl\\
 17-06-2022
