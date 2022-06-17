@@ -1,5 +1,5 @@
 ---
-title: "The effect of toxicant exposure on infected Flying Foxes"
+title: "The effect of toxicant exposure on infected flying foxes"
 subtitle: "A mathematical model that explores infection dynamics in toxicant-contaminated landscapes"
 output:
   pdf_document:
@@ -44,11 +44,11 @@ The model gives an insight in how the flying fox population size, infection prev
 # Methods
 The model describes the infection dynamics in toxicant-contaminated landscapes and distinguishes the population size of flying foxes in different habitats. A landscape is divided into a contaminated (T) and a pristine (P) area, and the flying foxes are classified by their infection status; infected (I) or susceptible (S). In all of these cases the population size is influenced by the demography, infection and movement of the animal. This is illustrated in figure 1. The model is written in R (version 4.1.3) and the DeSolve package (version 1.32) is imported in order to model the differential equations. 
 
-```{r, echo=FALSE, fig.cap="\\textit{biological model schematic. Each box represents a different population, where S stands for susceptible to infection, I for infected, P for pristine habitat and T for toxic-contaminated habitat. The arrows represent factors that influence the population size. Green represents demography factors, orange infection factors and purple describe movement factors. $f$ is the fraction of toxic-contaminated habitat and therefore  $f$ - 1 is the fraction of pristine habitat}", out.width = '60%'}
+```{r, echo=FALSE, fig.cap="\\textit{biological model schematic. Each box represents a different population, where S stands for susceptible to infection, I for infected, P for pristine habitat and T for toxic-contaminated habitat. The arrows represent factors that influence the population size. Green represents demography factors, orange infection factors and purple describe movement factors. $f$ is the fraction of toxic-contaminated habitat and therefore  $f$ - 1 is the fraction of pristine habitat.}", out.width = '60%'}
 knitr::include_graphics("./images/model.png")
 ```
 
-```{r, echo=FALSE, fig.cap="\\textit{differential equations used by the model. Each differential equation is highlighted by different color; green represents demography paramters, orange represents infection parameters and purple represents movement paramters. Each equation calculates the population size of a different group. The groups are: susceptible animals in a pristine habitat ($S_P$), infected animals in a pristine habitat ($I_P$,) susceptible animals in a toxic contaminated habit ($S_T$) and infected aminals in a toxid contamindated area ($I_T$). Image obtained from Sánchez et al. (2020)}", out.width = '70%'}
+```{r, echo=FALSE, fig.cap="\\textit{differential equations used by the model. Each differential equation is highlighted by different color; green represents demography paramters, orange represents infection parameters and purple represents movement paramters. Each equation calculates the population size of a different group. The groups are: susceptible animals in a pristine habitat ($S_P$), infected animals in a pristine habitat ($I_P$,) susceptible animals in a toxic contaminated habit ($S_T$) and infected aminals in a toxid contamindated area ($I_T$). Image obtained from Sánchez et al. (2020).}", out.width = '75%'}
 knitr::include_graphics("./images/ODE.png")
 ```
 
@@ -56,7 +56,7 @@ In figure 2 four differential equations are shown. Firstly, $\frac {dS_P}{dt}$ c
 Additionally, parts of the differential equations in figure 1 are colored. Each color represents a different process which may affect the population size with that infection status and habitat. Green is used to indicate demography, orange to indicate infection and purple to indicate movement.
 
 Each equation is broken down into its parameters and are listed in figure 3.
-```{r, echo=FALSE, fig.cap="\\textit{all of the paramters, definitoins, units and values used in the differential equations. The paramters are divided by demography, infection and movement. Image is obtained from Sánchez et al. (2020)} ", out.width = '70%'}
+```{r, echo=FALSE, fig.cap="\\textit{all of the paramters, definitoins, units and values used in the differential equations. The paramters are divided by demography, infection and movement. Image is obtained from Sánchez et al. (2020).} ", out.width = '75%'}
 knitr::include_graphics("./images/parameters.png")
 ```
 
@@ -72,6 +72,8 @@ In both parts the effect of different transmission rates in a toxic contaminated
 Transmission in this case is the transferring of a pathogen or virus from host to host. 
 
 For all six scenarios the population size, infection prevalence and spillover risk are being calculated using the following equations: $$\text{Population size} = S_P + I_P + S_T + I_T$$ $$\text{Infection prevelance} = \frac {I_T}{\text{population size}} $$ $$\text{Spillover risk} = \frac {I_T}{f} $$
+
+Infection prevalance is the ratio between the population size and the amount of infected animals in toxic-contaminated habitat. The spillover risk is the ratio between the amount of infected animals in toxic-contaminated habitat and the proportion of toxicants in that habitat. Spillover risk is used to indicate the transferrence of an infection from the flying fox to humans. 
 
 \newpage
 # Results
@@ -272,6 +274,7 @@ When the virus is less transmissible in toxicant-contaminated habitat than in pr
 But when a virus is equally (\textcolor{violet}{\boldmath$\beta_T = \beta_P$}) or more (\textcolor{cyan}{\boldmath$\beta_T > \beta_P$}) transmissible in toxicant-contaminated habitat, there is also a small increase in population size and a decrease in infection prevalence. However, in both scenarios the population size decreases sooner. This is because toxicants might amplify the transmission of the virus, causing the virus to go from host to host sooner and therefore infect more flying foxes with the virus. This amplification may be due to a weakened immune system caused by these toxicants, which might make the animal more susceptible to infection. When looking at the infection prevalence plot this might seem contradictory, because it decreases. However, the infection prevalence is the ratio between infected animals in toxic-contaminated habitat and the population size, More infected animals results in a lower population size, causing less infected animals in toxic-contaminated habitat and a lower population size, therefore a decline in infection prevalence. 
 
 It appears that in all three scenarios when there is a very high fraction of contaminated habitat, the population size (further) decreases. When looking at the equations there is a direct relation between $f$ and demography and movement. In the equations about the toxicant-contaminated habitat, a higher $f$ leads to less movement from the contaminated habitat to pristine habitat (- $\sigma$ * (1 - $c_\sigma$) * (1 - f)$I_T$). This means that toxicant-contaminated habitats contain more flying foxes than pristine habitats. Assumed that a higher toxicant-contaminated habitat is also more urbanized, leading to more food sources for flying foxes, the exposure of toxicants to the flying foxes are higher and can cause more fatal cases. This leads to a decline in population size. Then the ratio of population size and amount of infected flying foxes in the toxicant habitat increase.  
+
 It seems that, when a virus is equally or more transmissible in toxicant-contaminated habitat that the spill-over risk occur at lower proportions of toxicant-contaminated habitat. Meaning that less flying foxes are needed to spill over diseases to humans. However when the transmission rate is less, the virus is only being spilled over at a high $f$. This could be because a higher fraction of contaminated habitat could mean more urbanization and more human-wildlife contact, and therefore an increase in spill-over risk. 
 
 When comparing these results to the results of Sánchez et al. [-@wildlifearticle] the same results are found. The graphs of the population size, infection prevalence and spillover risk are identical ($c_\sigma = 0.2$). However, these three graphs are squeezed together in the paper of Sánchez et al [-@wildlifearticle]. This causes that the increases and decreases looks more steep and extreme, when this is not the case. For example, in figure 4B of this research the increase in infection prevalence at the end is moderate whilst this increase in figure 2b of their research is steeper. This can be a bit misleading.  
