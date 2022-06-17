@@ -3,7 +3,7 @@
 Joukje Kloosterman & Job Maathuis  
 17-06-2022
 
-![The model used for the research obtained from the original article: https://royalsocietypublishing.org/doi/full/10.1098/rsbl.2020.0559](./images/complete_figure.jpg)
+![The model used for the research obtained from the original article: https://royalsocietypublishing.org/doi/full/10.1098/rsbl.2020.0559](./images/complete_figure.jpg | width=100)
 
 The model gives an insight in how the flying fox population size, infection prevalence and zoonotic spillover depend on the contamination rate of the landscape and the effect of toxicant exposure on infection, movement and survival. The model was obtained from https://royalsocietypublishing.org/doi/full/10.1098/rsbl.2020.0559 . The model was written in R and (version 4.1.3) and the DeSolve package (version 1.32) is imported in order to model the differential equations.
 
