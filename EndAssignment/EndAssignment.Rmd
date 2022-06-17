@@ -208,6 +208,8 @@ plot_scenario <- function(datasets, y_labels, line_cols, legends){
 ## Transmission rates
 
 ```{r beta_t_scenarios, echo=FALSE, fig.cap="\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate $beta_T < beta_P$, $beta_T = beta_P$ and $beta_T < beta_P$, respectively. A $c_{sigma}$ value of 0.2 was used.}", fig.width=7}
+## CALCULATIING TRANSMISSION RATES WITH C_SIGMA = 0.2
+
 beta_t_data <- obtain_data(c_sigma = 0.2)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'slateblue', 'deepskyblue2')
@@ -234,6 +236,8 @@ Altogether it seems like a similar trend in all graphs of figure 4 can be seen. 
 ## Comparing \boldmath$c_\sigma$ values
 
 ```{r c_sigma_scenarios, echo=FALSE, fig.cap="\\textit{modulated population size (A), infection prevalence (B) and spillover risk (C) with respect to the fraction of toxic-contaminated habitat. In all plots the line colors orange, purple and blue indicate $beta_T < beta_P$, $beta_T = beta_P$ and $beta_T < beta_P$, respectively. A $c_{sigma}$ value of 0.8 was used.} ", fig.width=7}
+## CALCULATIING TRANSMISSION RATES WITH C_SIGMA = 0.8
+
 beta_t_data <- obtain_data(c_sigma = 0.8)
 beta_t_labels <- c('population size', 'infection prevealance', 'spillover risk')
 beta_t_cols <- c('orange', 'slateblue', 'deepskyblue2')
